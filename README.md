@@ -34,5 +34,6 @@ https://sakamsantparsbees.github.io/gravitysimulation/
     - Generate on click/touch feature with desired position and ID system implemented
     - Added new zoom and drag system
     - Random generation follows with zoom and drag
+    - Fixed zero mass acceraltion bug
   </p>
 </details>

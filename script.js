@@ -43,38 +43,42 @@ class Simulation {
         }
         for (let pi1 = 0 ; pi1 < this.particleList.length; pi1++) {
             let p1 = this.particleList[pi1];
-            for (let pi2 = pi1+1 ; pi2 < this.particleList.length; pi2++) {
-                let p2 = this.particleList[pi2];
-                const x1 = p1.x;
-                const y1 = p1.y;
-                const x2 = p2.x;
-                const y2 = p2.y;
-                const dx = x2-x1;
-                const dy = y2-y1;
-                const distance =
-                    (Math.sqrt((dx*dx)+(dy*dy)) * distanceRatio < this.settings.dMin) ?
-                        this.settings.dMin
-                        : Math.sqrt((dx*dx)+(dy*dy)) * distanceRatio;
-                const F = (p1.mass * p2.mass)/distance;
-                const Fx = F * ((dx)/distance);
-                const Fy = F * ((dy)/distance);
-                p1.ax += Fx;
-                p1.ay += Fy;
-                p2.ax -= Fx;
-                p2.ay -= Fy;
+            if (p1.mass !== 0) {
+                for (let pi2 = pi1+1 ; pi2 < this.particleList.length; pi2++) {
+                    let p2 = this.particleList[pi2];
+                    const x1 = p1.x;
+                    const y1 = p1.y;
+                    const x2 = p2.x;
+                    const y2 = p2.y;
+                    const dx = x2-x1;
+                    const dy = y2-y1;
+                    let distance = Math.sqrt((dx*dx)+(dy*dy));
+                    distance =
+                        (distance * distanceRatio < this.settings.dMin) ?
+                            this.settings.dMin
+                            : distance * distanceRatio;
+                    const F = (p1.mass * p2.mass)/distance;
+                    let Fx = (F * ((dx)/distance));
+                    Fx = isNaN(Fx) ? 0 : Fx;
+                    let Fy = (F * ((dy)/distance));
+                    Fy = isNaN(Fy) ? 0 : Fy;
+                    p1.ax += Fx;
+                    p1.ay += Fy;
+                    p2.ax -= Fx;
+                    p2.ay -= Fy;
+                }
+                p1.ax *= this.settings.G / p1.mass;
+                p1.ay *= this.settings.G / p1.mass;
+
+                if (p1.ax > this.settings.aLim)
+                    p1.ax = this.settings.aLim;
+
+                if (p1.ay > this.settings.aLim)
+                    p1.ay = this.settings.aLim;
+
+                p1.ax /= distanceRatio;
+                p1.ay /= distanceRatio;
             }
-            p1.ax *= this.settings.G / p1.mass;
-            p1.ay *= this.settings.G / p1.mass;
-
-            if (p1.ax > this.settings.aLim)
-                p1.ax = this.settings.aLim;
-
-            if (p1.ay > this.settings.aLim)
-                p1.ay = this.settings.aLim;
-
-            p1.ax /= distanceRatio;
-            p1.ay /= distanceRatio;
-
         }
         for (let p of this.particleList) {
             p.updateAcceleration(dtMS*0.001 * timeRatio);
@@ -99,7 +103,7 @@ class Simulation {
 
             ctx.fillStyle = p.color;
             if (renderCeil) {
-                ctx.fillRect(Math.ceil(x), Math.ceil(y), size, size);
+                ctx.fillRect(Math.ceil(x), Math.ceil(y), Math.ceil(size), Math.ceil(size));
             }
             else {
                 ctx.fillRect(x, y, size, size);
@@ -263,7 +267,7 @@ window.addEventListener('load', () => {
             )
         );
         simulation.settings["zoom"] = 
-            isNaN(parseFloat(event.target.value)) ?
+            isNaN(parseFloat(zoomInput.value)) ?
                 parseFloat(zoomInput.placeholder) * 0.01
             :
                 (
@@ -275,9 +279,9 @@ window.addEventListener('load', () => {
         simulation.renderStep();
     });
 
-    zoomInput.addEventListener('input', (event) => {
+    zoomInput.addEventListener('input', () => {
         simulation.settings["zoom"] = 
-            isNaN(parseFloat(event.target.value)) ?
+            isNaN(parseFloat(zoomInput.value)) ?
                 parseFloat(zoomInput.placeholder) * 0.01
             :
                 (
