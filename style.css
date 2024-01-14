@@ -23,28 +23,44 @@ body > div {
 }
 
 #menu img {
+    display: block;
     -webkit-user-drag: none;
     user-select: none;
     -moz-user-select: none;
     -webkit-user-select: none;
     -ms-user-select: none;
+    --menu-icon: 30px;
+    width: var(--menu-icon);
+    height: var(--menu-icon);
 }
 
 /* .menu-icon-span-wrapper */ #menu > span { 
     display: inline;
+    vertical-align: middle;
 }
 
 /* .menu-icon-div-wrapper */ #menu > span > div {
     display: inline-block;
     padding: 10px;
     padding-right: 0px;
-    height: var(--menu-icon);
 }
 
-/* .menu-icon */ #menu > span > div > * {
-    --menu-icon: 30px;
-    width: var(--menu-icon);
-    height: var(--menu-icon);
+.magnifier-wrap {
+    display: inline-block;
+    padding: 3px;
+    border: 2px white solid;
+    border-radius: 10px;
+}
+
+.magnifier-wrap * {
+    color: white;
+}
+
+.magnifier-wrap input[type="number"] {
+    margin-left: 2px;
+    margin-right: 2px;
+    width: 5em;
+    color: black;
 }
 
 #popups {
@@ -73,11 +89,11 @@ body > div {
     font-family: Arial, Helvetica, sans-serif;
 }
 
-input[type="number"] {
+#popups input[type="number"] {
     width: 100%;
 }
 
-td:first-child {
+#popups td:first-child {
     padding-right: 1em;
 }
 

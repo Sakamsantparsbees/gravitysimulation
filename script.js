@@ -33,16 +33,6 @@ class Simulation {
         this.pauseButtonClicked = false;
     }
 
-    draw(ctx, particle, width, height, renderCeil) {
-        const size = particle.size;
-        ctx.fillStyle = particle.color;
-        ctx.fillRect(
-            (renderCeil) ? Math.ceil(particle.x + width / 2 - size / 2) : particle.x + width / 2 - size / 2,
-            (renderCeil) ? Math.ceil(particle.y + height / 2 - size / 2) : particle.y + height / 2 - size / 2 ,
-            size, size
-        );
-    }
-
     calculateAccelerationStep(dtMS) {
         const distanceRatio = this.settings.dMulMilKm * 1e+9 / this.settings.dMulPx;
         const timeRatio = this.settings.timeStepHr*3600 / this.settings.timeStepSec;
@@ -93,9 +83,22 @@ class Simulation {
         const ctx = this.canvas.getContext('2d');
         const width = this.canvas.width;
         const height = this.canvas.height;
+        const renderCeil = this.settings.renderCeil;
+        const zoom = this.settings.zoom;
+        let size, x, y;
         ctx.clearRect(0, 0, width, height);
+
         for (let p of this.particleList) {
-            this.draw(ctx, p, width, height, this.settings.renderCeil);
+            size = p.size * zoom;
+            x = p.x * zoom + width * 0.5 - size * 0.5;
+            y = p.y * zoom + height * 0.5 - size * 0.5;
+
+            ctx.fillStyle = p.color;
+            ctx.fillRect(
+                (renderCeil) ? Math.ceil(x) : x,
+                (renderCeil) ? Math.ceil(y) : y,
+                size, size
+            );
         }
     }
 
@@ -159,6 +162,7 @@ class Simulation {
 
 window.addEventListener('load', () => {
     const applySettingsButton = document.querySelector('#applySettings');
+    const zoomInput = document.querySelector('#zoom');
     const menuButtons = Object.fromEntries(
         [...document.querySelector('#menu').getElementsByTagName('img')].filter(
             (e) => (e.hasAttribute('data-popup'))
@@ -180,24 +184,43 @@ window.addEventListener('load', () => {
     const simulation = new Simulation(
         canvas,
         [],
-        Object.fromEntries(
-            [...applySettingsButton.parentNode.getElementsByTagName('input')].filter(
-                (e) => (e.hasAttribute('type') && e.hasAttribute('id'))
-            ).map(
-                (e) => {
-                    if (e.getAttribute('type') === 'number') {
-                        return [e.getAttribute('id'), isNaN(parseInt(e.value)) ? parseFloat(e.getAttribute('placeholder')) : parseFloat(e.value)];
+        Object.assign(
+            Object.fromEntries(
+                [...applySettingsButton.parentNode.getElementsByTagName('input')].filter(
+                    (e) => (e.hasAttribute('type') && e.hasAttribute('id'))
+                ).map(
+                    (e) => {
+                        if (e.getAttribute('type') === 'number') {
+                            return [e.getAttribute('id'), isNaN(parseInt(e.value)) ? parseFloat(e.getAttribute('placeholder')) : parseFloat(e.value)];
+                        }
+                        else if (e.getAttribute('type') ==='checkbox') {
+                            return [e.getAttribute('id'), e.checked];
+                        }
                     }
-                    else if (e.getAttribute('type') ==='checkbox') {
-                        return [e.getAttribute('id'), e.checked];
-                    }
-                }
-            )
+                )
+            ),
+            {
+                zoom: (
+                    isNaN(parseFloat(zoomInput.value)) ?
+                            parseFloat(zoomInput.placeholder) * 0.01
+                        :
+                            parseFloat(zoomInput.value) * 0.01
+                )
+            }
         )
     );
+
+    window.addEventListener('resize', () => {
+        canvas.width = window.innerWidth;
+        canvas.height = window.innerHeight;
+        simulation.renderStep();
+    });
+    canvas.width = window.innerWidth;
+    canvas.height = window.innerHeight;
     
     // Apply button
-    applySettingsButton.addEventListener('click', () => {
+    applySettingsButton.addEventListener('click', (event) => {
+        event.preventDefault();
         simulation.settings = Object.fromEntries(
             [...applySettingsButton.parentNode.getElementsByTagName('input')].filter(
                 (e) => (e.hasAttribute('type') && e.hasAttribute('id'))
@@ -226,22 +249,28 @@ window.addEventListener('load', () => {
                 }
             )
         );
+        simulation.settings["zoom"] = 
+            isNaN(parseFloat(zoomInput.value)) ?
+                    parseFloat(zoomInput.placeholder) * 0.01
+                :
+                    parseFloat(zoomInput.value) * 0.01;
         simulation.renderStep();
     });
 
-    window.addEventListener('resize', () => {
-        canvas.width = window.innerWidth;
-        canvas.height = window.innerHeight;
+    zoomInput.addEventListener('input', (event) => {
+        simulation.settings["zoom"] = 
+            isNaN(parseFloat(event.target.value)) ?
+                parseFloat(zoomInput.placeholder) * 0.01
+            :
+                parseFloat(event.target.value) * 0.01;
         simulation.renderStep();
     });
-    canvas.width = window.innerWidth;
-    canvas.height = window.innerHeight;
 
     function getGenerateData() {
         const particlesAmount = isNaN(parseInt(insertInputs.particlesAmount.value)) ? insertInputs.particlesAmount.placeholder : parseInt(insertInputs.particlesAmount.value);
         const mass = isNaN(parseFloat(insertInputs.mass.value)) ? parseFloat(insertInputs.mass.placeholder) : parseFloat(insertInputs.mass.value);
         const size = isNaN(parseInt(insertInputs.size.value)) ? parseInt(insertInputs.size.placeholder) : parseInt(insertInputs.size.value);
-        const color = insertInputs.color.value ? insertInputs.color.placeholder : insertInputs.color.value;
+        const color = insertInputs.color.value ? insertInputs.color.value : insertInputs.color.placeholder;
         const vx = isNaN(parseFloat(insertInputs.xvelocity.value)) ? parseFloat(insertInputs.xvelocity.placeholder) : parseFloat(insertInputs.xvelocity.value);
         const vy = isNaN(parseFloat(insertInputs.yvelocity.value)) ? parseFloat(insertInputs.yvelocity.placeholder) : parseFloat(insertInputs.yvelocity.value);
         const id = insertInputs.idName.value ? insertInputs.idName.value : null;
@@ -260,7 +289,33 @@ window.addEventListener('load', () => {
         };
     }
 
-    document.querySelector('#generateAllOverScreen').addEventListener('click', () => {
+    canvas.addEventListener('mousedown', (event) => {
+        event.preventDefault();
+        if (insertInputs.generateOnTouch.checked) {
+            const generateData = getGenerateData();
+
+            const x = event.clientX - simulation.canvas.width*0.5;
+            const y = event.clientY - simulation.canvas.height*0.5;
+
+            const distanceRatio = simulation.settings.dMulPx / (simulation.settings.dMulMilKm * 1e+9);
+            const vx = generateData.vx * distanceRatio;
+            const vy = generateData.vy * distanceRatio;
+
+            const particle = new Particle(
+                x, y, generateData.mass,
+                generateData.size, generateData.color,
+                vx,
+                vy,
+                generateData.id
+            );
+
+            simulation.particleList.push(particle);
+            simulation.renderStep();
+        }
+    });
+
+    document.querySelector('#generateAllOverScreen').addEventListener('click', (event) => {
+        event.preventDefault();
         const randomizedParticleList = [];
         const generateData = getGenerateData();
 
@@ -293,7 +348,8 @@ window.addEventListener('load', () => {
         }
     });
 
-    document.querySelector('#generateDesiredPosition').addEventListener('click', () => {
+    document.querySelector('#generateDesiredPosition').addEventListener('click', (event) => {
+        event.preventDefault();
         const generateData = getGenerateData();
         const distanceRatio = simulation.settings.dMulPx / (simulation.settings.dMulMilKm * 1e+9);
         const vx = generateData.vx * distanceRatio;
@@ -307,26 +363,30 @@ window.addEventListener('load', () => {
             generateData.id
         );
 
-        simulation.particleList = simulation.particleList.concat(particle);
+        simulation.particleList.push(particle);
         simulation.renderStep();
     });
 
-    menuButtons['reset'].addEventListener('click', () => {
+    menuButtons['reset'].addEventListener('click', (event) => {
+        event.preventDefault();
         simulation.resetVelocity();
     });
 
-    menuButtons['play'].addEventListener('click', () => {
+    menuButtons['play'].addEventListener('click', (event) => {
+        event.preventDefault();
         menuButtons['play'].parentNode.parentNode.style.display = "none";
         menuButtons['pause'].parentNode.parentNode.style.display = "inline-block";
         simulation.start();
     });
-    menuButtons['pause'].addEventListener('click', () => {
+    menuButtons['pause'].addEventListener('click', (event) => {
+        event.preventDefault();
         menuButtons['pause'].parentNode.parentNode.style.display = "none";
         menuButtons['play'].parentNode.parentNode.style.display = "inline-block";
         simulation.pause();
     });
 
-    menuButtons['end'].addEventListener('click', () => {
+    menuButtons['end'].addEventListener('click', (event) => {
+        event.preventDefault();
         if (getComputedStyle(menuButtons['pause'].parentNode.parentNode).display !== 'none') {
             menuButtons['pause'].parentNode.parentNode.style.display = "none";
             menuButtons['play'].parentNode.parentNode.style.display = "inline-block";
