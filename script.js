@@ -28,19 +28,11 @@ class Simulation {
         this.canvas = canvas;
         this.particleList = particleList;
         this.settings = settings;
+        this.xdrag = 0;
+        this.ydrag = 0;
         this.frameId = null;
         this.simulationRunning = false;    
         this.pauseButtonClicked = false;
-    }
-
-    draw(ctx, particle, width, height, renderCeil) {
-        const size = particle.size;
-        ctx.fillStyle = particle.color;
-        ctx.fillRect(
-            (renderCeil) ? Math.ceil(particle.x + width / 2 - size / 2) : particle.x + width / 2 - size / 2,
-            (renderCeil) ? Math.ceil(particle.y + height / 2 - size / 2) : particle.y + height / 2 - size / 2 ,
-            size, size
-        );
     }
 
     calculateAccelerationStep(dtMS) {
@@ -51,38 +43,42 @@ class Simulation {
         }
         for (let pi1 = 0 ; pi1 < this.particleList.length; pi1++) {
             let p1 = this.particleList[pi1];
-            for (let pi2 = pi1+1 ; pi2 < this.particleList.length; pi2++) {
-                let p2 = this.particleList[pi2];
-                const x1 = p1.x;
-                const y1 = p1.y;
-                const x2 = p2.x;
-                const y2 = p2.y;
-                const dx = x2-x1;
-                const dy = y2-y1;
-                const distance =
-                    (Math.sqrt((dx*dx)+(dy*dy)) * distanceRatio < this.settings.dMin) ?
-                        this.settings.dMin
-                        : Math.sqrt((dx*dx)+(dy*dy)) * distanceRatio;
-                const F = (p1.mass * p2.mass)/distance;
-                const Fx = F * ((dx)/distance);
-                const Fy = F * ((dy)/distance);
-                p1.ax += Fx;
-                p1.ay += Fy;
-                p2.ax -= Fx;
-                p2.ay -= Fy;
+            if (p1.mass !== 0) {
+                for (let pi2 = pi1+1 ; pi2 < this.particleList.length; pi2++) {
+                    let p2 = this.particleList[pi2];
+                    const x1 = p1.x;
+                    const y1 = p1.y;
+                    const x2 = p2.x;
+                    const y2 = p2.y;
+                    const dx = x2-x1;
+                    const dy = y2-y1;
+                    let distance = Math.sqrt((dx*dx)+(dy*dy));
+                    distance =
+                        (distance * distanceRatio < this.settings.dMin) ?
+                            this.settings.dMin
+                            : distance * distanceRatio;
+                    const F = (p1.mass * p2.mass)/distance;
+                    let Fx = (F * ((dx)/distance));
+                    Fx = isNaN(Fx) ? 0 : Fx;
+                    let Fy = (F * ((dy)/distance));
+                    Fy = isNaN(Fy) ? 0 : Fy;
+                    p1.ax += Fx;
+                    p1.ay += Fy;
+                    p2.ax -= Fx;
+                    p2.ay -= Fy;
+                }
+                p1.ax *= this.settings.G / p1.mass;
+                p1.ay *= this.settings.G / p1.mass;
+
+                if (p1.ax > this.settings.aLim)
+                    p1.ax = this.settings.aLim;
+
+                if (p1.ay > this.settings.aLim)
+                    p1.ay = this.settings.aLim;
+
+                p1.ax /= distanceRatio;
+                p1.ay /= distanceRatio;
             }
-            p1.ax *= this.settings.G / p1.mass;
-            p1.ay *= this.settings.G / p1.mass;
-
-            if (p1.ax > this.settings.aLim)
-                p1.ax = this.settings.aLim;
-
-            if (p1.ay > this.settings.aLim)
-                p1.ay = this.settings.aLim;
-
-            p1.ax /= distanceRatio;
-            p1.ay /= distanceRatio;
-
         }
         for (let p of this.particleList) {
             p.updateAcceleration(dtMS*0.001 * timeRatio);
@@ -93,9 +89,25 @@ class Simulation {
         const ctx = this.canvas.getContext('2d');
         const width = this.canvas.width;
         const height = this.canvas.height;
+        const renderCeil = this.settings.renderCeil;
+        const zoom = this.settings.zoom;
+        const xdrag = this.xdrag;
+        const ydrag = this.ydrag;
+        let size, x, y;
         ctx.clearRect(0, 0, width, height);
+
         for (let p of this.particleList) {
-            this.draw(ctx, p, width, height, this.settings.renderCeil);
+            size = p.size * zoom;
+            x = (p.x + xdrag) * zoom + width * 0.5 - size * 0.5;
+            y = (p.y + ydrag) * zoom + height * 0.5 - size * 0.5;
+
+            ctx.fillStyle = p.color;
+            if (renderCeil) {
+                ctx.fillRect(Math.ceil(x), Math.ceil(y), Math.ceil(size), Math.ceil(size));
+            }
+            else {
+                ctx.fillRect(x, y, size, size);
+            }
         }
     }
 
@@ -158,7 +170,11 @@ class Simulation {
 
 
 window.addEventListener('load', () => {
+    let dragState = false;
+    let lastXDrag = null;
+    let lastYDrag = null;
     const applySettingsButton = document.querySelector('#applySettings');
+    const zoomInput = document.querySelector('#zoom');
     const menuButtons = Object.fromEntries(
         [...document.querySelector('#menu').getElementsByTagName('img')].filter(
             (e) => (e.hasAttribute('data-popup'))
@@ -180,24 +196,48 @@ window.addEventListener('load', () => {
     const simulation = new Simulation(
         canvas,
         [],
-        Object.fromEntries(
-            [...applySettingsButton.parentNode.getElementsByTagName('input')].filter(
-                (e) => (e.hasAttribute('type') && e.hasAttribute('id'))
-            ).map(
-                (e) => {
-                    if (e.getAttribute('type') === 'number') {
-                        return [e.getAttribute('id'), isNaN(parseInt(e.value)) ? parseFloat(e.getAttribute('placeholder')) : parseFloat(e.value)];
+        Object.assign(
+            Object.fromEntries(
+                [...applySettingsButton.parentNode.getElementsByTagName('input')].filter(
+                    (e) => (e.hasAttribute('type') && e.hasAttribute('id'))
+                ).map(
+                    (e) => {
+                        if (e.getAttribute('type') === 'number') {
+                            return [e.getAttribute('id'), isNaN(parseInt(e.value)) ? parseFloat(e.getAttribute('placeholder')) : parseFloat(e.value)];
+                        }
+                        else if (e.getAttribute('type') ==='checkbox') {
+                            return [e.getAttribute('id'), e.checked];
+                        }
                     }
-                    else if (e.getAttribute('type') ==='checkbox') {
-                        return [e.getAttribute('id'), e.checked];
-                    }
-                }
-            )
+                )
+            ),
+            {
+                zoom: (
+                    isNaN(parseFloat(zoomInput.value)) ?
+                            parseFloat(zoomInput.placeholder) * 0.01
+                        :
+                            (
+                                parseFloat(zoomInput.value) > 0 ?
+                                    parseFloat(zoomInput.value) * 0.01
+                                :
+                                    parseFloat(zoomInput.placeholder) * 0.01
+                            )
+                )
+            }
         )
     );
+
+    window.addEventListener('resize', () => {
+        canvas.width = window.innerWidth;
+        canvas.height = window.innerHeight;
+        simulation.renderStep();
+    });
+    canvas.width = window.innerWidth;
+    canvas.height = window.innerHeight;
     
     // Apply button
-    applySettingsButton.addEventListener('click', () => {
+    applySettingsButton.addEventListener('click', (event) => {
+        event.preventDefault();
         simulation.settings = Object.fromEntries(
             [...applySettingsButton.parentNode.getElementsByTagName('input')].filter(
                 (e) => (e.hasAttribute('type') && e.hasAttribute('id'))
@@ -226,22 +266,38 @@ window.addEventListener('load', () => {
                 }
             )
         );
+        simulation.settings["zoom"] = 
+            isNaN(parseFloat(zoomInput.value)) ?
+                parseFloat(zoomInput.placeholder) * 0.01
+            :
+                (
+                    parseFloat(zoomInput.value) > 0 ?
+                        parseFloat(zoomInput.value) * 0.01
+                    :
+                        parseFloat(zoomInput.placeholder) * 0.01
+                );
         simulation.renderStep();
     });
 
-    window.addEventListener('resize', () => {
-        canvas.width = window.innerWidth;
-        canvas.height = window.innerHeight;
+    zoomInput.addEventListener('input', () => {
+        simulation.settings["zoom"] = 
+            isNaN(parseFloat(zoomInput.value)) ?
+                parseFloat(zoomInput.placeholder) * 0.01
+            :
+                (
+                    parseFloat(zoomInput.value) > 0 ?
+                        parseFloat(zoomInput.value) * 0.01
+                    :
+                        parseFloat(zoomInput.placeholder) * 0.01
+                );
         simulation.renderStep();
     });
-    canvas.width = window.innerWidth;
-    canvas.height = window.innerHeight;
 
     function getGenerateData() {
         const particlesAmount = isNaN(parseInt(insertInputs.particlesAmount.value)) ? insertInputs.particlesAmount.placeholder : parseInt(insertInputs.particlesAmount.value);
         const mass = isNaN(parseFloat(insertInputs.mass.value)) ? parseFloat(insertInputs.mass.placeholder) : parseFloat(insertInputs.mass.value);
         const size = isNaN(parseInt(insertInputs.size.value)) ? parseInt(insertInputs.size.placeholder) : parseInt(insertInputs.size.value);
-        const color = insertInputs.color.value ? insertInputs.color.placeholder : insertInputs.color.value;
+        const color = insertInputs.color.value ? insertInputs.color.value : insertInputs.color.placeholder;
         const vx = isNaN(parseFloat(insertInputs.xvelocity.value)) ? parseFloat(insertInputs.xvelocity.placeholder) : parseFloat(insertInputs.xvelocity.value);
         const vy = isNaN(parseFloat(insertInputs.yvelocity.value)) ? parseFloat(insertInputs.yvelocity.placeholder) : parseFloat(insertInputs.yvelocity.value);
         const id = insertInputs.idName.value ? insertInputs.idName.value : null;
@@ -260,14 +316,84 @@ window.addEventListener('load', () => {
         };
     }
 
-    document.querySelector('#generateAllOverScreen').addEventListener('click', () => {
+    canvas.addEventListener('mousedown', (event) => {
+        event.preventDefault();
+        if (menuButtons.drag.getAttribute('data-checked') === 'true') {
+            dragState = true;
+        }
+        else if (insertInputs.generateOnTouch.checked) {
+            const generateData = getGenerateData();
+
+            const x = event.clientX - simulation.canvas.width*0.5;
+            const y = event.clientY - simulation.canvas.height*0.5;
+
+            const distanceRatio = simulation.settings.dMulPx / (simulation.settings.dMulMilKm * 1e+9);
+            const vx = generateData.vx * distanceRatio;
+            const vy = generateData.vy * distanceRatio;
+
+            const particle = new Particle(
+                x, y, generateData.mass,
+                generateData.size, generateData.color,
+                vx,
+                vy,
+                generateData.id
+            );
+
+            simulation.particleList.push(particle);
+            simulation.renderStep();
+        }
+    });
+
+    /* uses body instead of canvas to detect every mouseup */
+    document.querySelector('body').addEventListener('mousemove', (event) => {
+        if (dragState) {
+            const zoom = simulation.settings.zoom; 
+            let dx, dy;
+
+            if (lastXDrag == null) {
+                lastXDrag = event.clientX;
+                dx = 0
+            }
+            else {
+                dx = event.clientX - lastXDrag;
+                dx /= zoom 
+                lastXDrag = event.clientX;
+            }
+
+            if (lastYDrag == null) {
+                lastYDrag = event.clientY;
+                dy = 0
+            }
+            else {
+                dy = event.clientY - lastYDrag; 
+                dy /= zoom;
+                lastYDrag = event.clientY;
+            }
+
+            simulation.xdrag += dx;
+            simulation.ydrag += dy;
+            simulation.renderStep();
+        }
+    });
+
+    /* uses body instead of canvas to detect every mouseup */
+    document.querySelector('body').addEventListener('mouseup', () => {
+        dragState = false;
+        lastXDrag = null;
+        lastYDrag = null;
+        simulation.renderStep();
+    });
+
+    document.querySelector('#generateAllOverScreen').addEventListener('click', (event) => {
+        event.preventDefault();
         const randomizedParticleList = [];
         const generateData = getGenerateData();
+        const zoom = simulation.settings.zoom;
 
-        const width = simulation.canvas.width;
-        const halfWidth = width*0.5;
-        const height = simulation.canvas.height;
-        const halfHeight = height*0.5;
+        const width = simulation.canvas.width/zoom;
+        const halfWidth = width*0.5 + simulation.xdrag;
+        const height = simulation.canvas.height/zoom;
+        const halfHeight = height*0.5 + simulation.ydrag;
 
         const distanceRatio = simulation.settings.dMulPx / (simulation.settings.dMulMilKm * 1e+9);
         const vx = generateData.vx * distanceRatio;
@@ -293,7 +419,8 @@ window.addEventListener('load', () => {
         }
     });
 
-    document.querySelector('#generateDesiredPosition').addEventListener('click', () => {
+    document.querySelector('#generateDesiredPosition').addEventListener('click', (event) => {
+        event.preventDefault();
         const generateData = getGenerateData();
         const distanceRatio = simulation.settings.dMulPx / (simulation.settings.dMulMilKm * 1e+9);
         const vx = generateData.vx * distanceRatio;
@@ -307,26 +434,42 @@ window.addEventListener('load', () => {
             generateData.id
         );
 
-        simulation.particleList = simulation.particleList.concat(particle);
+        simulation.particleList.push(particle);
         simulation.renderStep();
     });
 
-    menuButtons['reset'].addEventListener('click', () => {
+    menuButtons['drag'].addEventListener('click', (event) => {
+        event.preventDefault();
+        if (menuButtons['drag'].getAttribute('data-checked') === 'false'){
+            menuButtons['drag'].setAttribute('src', 'svgs/drag-on.svg');
+            menuButtons['drag'].setAttribute('data-checked', 'true');
+        }
+        else {
+            menuButtons['drag'].setAttribute('src', 'svgs/drag-off.svg');
+            menuButtons['drag'].setAttribute('data-checked', 'false');
+        }
+    });
+
+    menuButtons['reset'].addEventListener('click', (event) => {
+        event.preventDefault();
         simulation.resetVelocity();
     });
 
-    menuButtons['play'].addEventListener('click', () => {
+    menuButtons['play'].addEventListener('click', (event) => {
+        event.preventDefault();
         menuButtons['play'].parentNode.parentNode.style.display = "none";
         menuButtons['pause'].parentNode.parentNode.style.display = "inline-block";
         simulation.start();
     });
-    menuButtons['pause'].addEventListener('click', () => {
+    menuButtons['pause'].addEventListener('click', (event) => {
+        event.preventDefault();
         menuButtons['pause'].parentNode.parentNode.style.display = "none";
         menuButtons['play'].parentNode.parentNode.style.display = "inline-block";
         simulation.pause();
     });
 
-    menuButtons['end'].addEventListener('click', () => {
+    menuButtons['end'].addEventListener('click', (event) => {
+        event.preventDefault();
         if (getComputedStyle(menuButtons['pause'].parentNode.parentNode).display !== 'none') {
             menuButtons['pause'].parentNode.parentNode.style.display = "none";
             menuButtons['play'].parentNode.parentNode.style.display = "inline-block";

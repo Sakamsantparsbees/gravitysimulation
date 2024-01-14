@@ -19,11 +19,22 @@
         <img data-popup="play" data-original-src="svgs/play.svg" alt="Play/Start Simulation"></img>
         <img data-popup="pause" data-original-src="svgs/pause.svg" alt="Pause Simulation"></img>
         <img data-popup="end" data-original-src="svgs/end.svg" alt="End Simulation"></img>
+        <img data-popup="drag" data-checked="false" src="svgs/drag-off.svg" alt="Drag"></img>
+        <div class="magnifier-wrap">
+            <table>
+                <tr>
+                    <td><input type="number" id="zoom" placeholder="100" value="100"></input></td>
+                    <td>%</td>
+                    <td><img src="svgs/magnifier.svg" alt="Magnifier" draggable="false" style="display: block;"></img></td>
+                </tr>
+            </table>
+        </div>
         <script>
             (function() {
                 let isTouchScreen = false;
-                const menuIcons = document.currentScript.parentNode.getElementsByTagName('img');
                 const menu = document.currentScript.parentNode;
+                const menuIcons = menu.children;
+                
                 [...menuIcons]?.forEach(
                     icon => {
                         if (icon?.hasAttribute('data-original-src')) {
@@ -34,19 +45,18 @@
 
                 const firstHiddens = ['svgs/pause.svg'];
 
-                [...menu?.children]?.forEach(
+                [...menuIcons]?.forEach(
                 e => {
-                    if (e) {
+                    if (e && e !== document.currentScript) {
                         const wrapper = document.createElement('span');
                         const parent = document.createElement('div');
 
                         if (
                             e.hasAttribute('data-original-src') &&
                             firstHiddens.every(
-                                (svgPath) => (svgPath === e.getAttribute('data-original-src'))
+                                (path) => (path === e.getAttribute('data-original-src'))
                             )
-                        )
-                        {
+                        ) {
                             wrapper.style.display = 'none'
                         }
 
@@ -55,46 +65,54 @@
                         if (e.hasAttribute('data-original-src')) {
                             const originalSrc = e.getAttribute('data-original-src');
 
-                            e.addEventListener('mouseenter', () => {
+                            e.addEventListener('mouseenter', (event) => {
+                                event.preventDefault();
                                 if (!isTouchScreen) {
                                     e.setAttribute('src', `${originalSrc.slice(0, originalSrc.length - 4)}-hover.svg`);
                                     isTouchScreen = false;
                                 }
                             });
 
-                            e.addEventListener('mouseleave', () => {
+                            e.addEventListener('mouseleave', (event) => {
+                                event.preventDefault();
                                 e.setAttribute('src', e.getAttribute('data-original-src'));
                             });
 
-                            e.addEventListener('mouseup', () => {
+                            e.addEventListener('mouseup', (event) => {
+                                event.preventDefault();
                                 if (!isTouchScreen)
                                     e.setAttribute('src', `${originalSrc.slice(0, originalSrc.length - 4)}-hover.svg`);
                                 isTouchScreen = false;
                             });
 
-                            e.addEventListener('mousedown', () => {
+                            e.addEventListener('mousedown', (event) => {
+                                event.preventDefault();
                                 if (!isTouchScreen)
                                     e.setAttribute('src', `${originalSrc.slice(0, originalSrc.length - 4)}-click.svg`);
                             });
 
-                            e.addEventListener('touchstart', () => {
+                            e.addEventListener('touchstart', (event) => {
+                                event.preventDefault();
                                 isTouchScreen = true;
                                 if (isTouchScreen)
                                     e.setAttribute('src', `${originalSrc.slice(0, originalSrc.length - 4)}-click.svg`);
                             });
 
-                            e.addEventListener('touchend', () => {
+                            e.addEventListener('touchend', (event) => {
+                                event.preventDefault();
                                 if (isTouchScreen)
                                     e.setAttribute('src', e.getAttribute('data-original-src'));
                             });
 
-                            e.addEventListener('touchcancel', () => {
+                            e.addEventListener('touchcancel', (event) => {
+                                event.preventDefault();
                                 if (isTouchScreen)
                                     e.setAttribute('src', e.getAttribute('data-original-src'));
                             });
                         }
 
-                        if (e.hasAttribute('data-popup')) e.addEventListener('click', () => {
+                        if (e.hasAttribute('data-popup')) e.addEventListener('click', (event) => {
+                            event.preventDefault();
                             void Array.prototype.every.call(document.querySelector('#popups').children,
                                 popup => {
                                     if (popup.hasAttribute('data-popup')) {
@@ -113,10 +131,12 @@
 
                         parent.appendChild(e);
                         wrapper.appendChild(parent)
-                        document.querySelector('#menu').appendChild(wrapper);
+                        menu.appendChild(wrapper);
                     }
-                }
-            );
+                    else if (e && e !== document.currentScript) {
+                        menu.appendChild(e);
+                    }
+                });
             }());
         </script>
     </div>
@@ -128,7 +148,7 @@
                 <br/>
                 <div>Settings</div>
                 <hr></hr>
-                <div>Version 2.1</div>
+                <div>Version 2.2</div>
                 <hr></hr>
                 <table>
                     <tr>
@@ -198,9 +218,10 @@
                     </tr>
                 </table>
                 <hr></hr>
+                <input type="checkbox" id="generateOnTouch"></input>
+                <label for="generateOnTouch">Generate on touch/click</label>
+                <hr></hr>
                 <div>Random Process</div>
-                <input type="checkbox" id="generateCheckbox"></input>
-                <label for="generateCheckbox">Generate on touch/click</label>
                 <button id="generateAllOverScreen">Generate scattered all over screen</button>
                 <hr></hr>
                 <div>Desired Position Generate</div>

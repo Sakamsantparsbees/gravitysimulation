@@ -1,10 +1,11 @@
-# gravitysimulation V2.1
+# gravitysimulation V2.2
 https://sakamsantparsbees.github.io/gravitysimulation/
 
 <details>
   <summary>Changelog</summary>
   <p>
-    
+
+<!-- 
     V2.0.1:
     - Fixed gravitational issues
     
@@ -17,16 +18,22 @@ https://sakamsantparsbees.github.io/gravitysimulation/
     
     V2.0.4:
     - Fixed settings svg icon on webkit
-    - Added margin between buttons
+    - Added margin between buttons in popups (eg. settings)
     
     V2.0.5:
     - Added inital velocity settings
-    - New icon
-    
+    - New faviicon
+     -->
     V2.1:
-    - Added generate particles with desired position and give it an id system
-    - Canceled selection
+    - Generate particles with desired position and ID idea(structure) added
+    - Canceled selection features
     - Simulation pause when tab is inactive
     - Fixed distance ratio problems
+
+    V2.2:
+    - Generate on click/touch feature with desired position and ID system implemented
+    - Added new zoom and drag system
+    - Random generation follows with zoom and drag
+    - Fixed zero mass acceraltion bug
   </p>
 </details>
