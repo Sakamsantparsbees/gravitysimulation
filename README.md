@@ -25,13 +25,13 @@ https://sakamsantparsbees.github.io/gravitysimulation/
     - New faviicon
      -->
     V2.1:
-    - Generate particles with desired position and ID feature implemented
+    - Generate particles with desired position and ID idea(structure) added
     - Canceled selection features
     - Simulation pause when tab is inactive
     - Fixed distance ratio problems
 
     V2.2:
-    - Generate on click/touch feature implemented
+    - Generate on click/touch feature with desired position and ID system implemented
     - Added new zoom and drag system
     - Random generation follows with zoom and drag
   </p>
