@@ -28,6 +28,8 @@ class Simulation {
         this.canvas = canvas;
         this.particleList = particleList;
         this.settings = settings;
+        this.xdrag = 0;
+        this.ydrag = 0;
         this.frameId = null;
         this.simulationRunning = false;    
         this.pauseButtonClicked = false;
@@ -85,20 +87,23 @@ class Simulation {
         const height = this.canvas.height;
         const renderCeil = this.settings.renderCeil;
         const zoom = this.settings.zoom;
+        const xdrag = this.xdrag;
+        const ydrag = this.ydrag;
         let size, x, y;
         ctx.clearRect(0, 0, width, height);
 
         for (let p of this.particleList) {
             size = p.size * zoom;
-            x = p.x * zoom + width * 0.5 - size * 0.5;
-            y = p.y * zoom + height * 0.5 - size * 0.5;
+            x = (p.x + xdrag) * zoom + width * 0.5 - size * 0.5;
+            y = (p.y + ydrag) * zoom + height * 0.5 - size * 0.5;
 
             ctx.fillStyle = p.color;
-            ctx.fillRect(
-                (renderCeil) ? Math.ceil(x) : x,
-                (renderCeil) ? Math.ceil(y) : y,
-                size, size
-            );
+            if (renderCeil) {
+                ctx.fillRect(Math.ceil(x), Math.ceil(y), size, size);
+            }
+            else {
+                ctx.fillRect(x, y, size, size);
+            }
         }
     }
 
@@ -161,6 +166,9 @@ class Simulation {
 
 
 window.addEventListener('load', () => {
+    let dragState = false;
+    let lastXDrag = null;
+    let lastYDrag = null;
     const applySettingsButton = document.querySelector('#applySettings');
     const zoomInput = document.querySelector('#zoom');
     const menuButtons = Object.fromEntries(
@@ -204,7 +212,12 @@ window.addEventListener('load', () => {
                     isNaN(parseFloat(zoomInput.value)) ?
                             parseFloat(zoomInput.placeholder) * 0.01
                         :
-                            parseFloat(zoomInput.value) * 0.01
+                            (
+                                parseFloat(zoomInput.value) > 0 ?
+                                    parseFloat(zoomInput.value) * 0.01
+                                :
+                                    parseFloat(zoomInput.placeholder) * 0.01
+                            )
                 )
             }
         )
@@ -250,10 +263,15 @@ window.addEventListener('load', () => {
             )
         );
         simulation.settings["zoom"] = 
-            isNaN(parseFloat(zoomInput.value)) ?
-                    parseFloat(zoomInput.placeholder) * 0.01
-                :
-                    parseFloat(zoomInput.value) * 0.01;
+            isNaN(parseFloat(event.target.value)) ?
+                parseFloat(zoomInput.placeholder) * 0.01
+            :
+                (
+                    parseFloat(zoomInput.value) > 0 ?
+                        parseFloat(zoomInput.value) * 0.01
+                    :
+                        parseFloat(zoomInput.placeholder) * 0.01
+                );
         simulation.renderStep();
     });
 
@@ -262,7 +280,12 @@ window.addEventListener('load', () => {
             isNaN(parseFloat(event.target.value)) ?
                 parseFloat(zoomInput.placeholder) * 0.01
             :
-                parseFloat(event.target.value) * 0.01;
+                (
+                    parseFloat(zoomInput.value) > 0 ?
+                        parseFloat(zoomInput.value) * 0.01
+                    :
+                        parseFloat(zoomInput.placeholder) * 0.01
+                );
         simulation.renderStep();
     });
 
@@ -291,7 +314,10 @@ window.addEventListener('load', () => {
 
     canvas.addEventListener('mousedown', (event) => {
         event.preventDefault();
-        if (insertInputs.generateOnTouch.checked) {
+        if (menuButtons.drag.getAttribute('data-checked') === 'true') {
+            dragState = true;
+        }
+        else if (insertInputs.generateOnTouch.checked) {
             const generateData = getGenerateData();
 
             const x = event.clientX - simulation.canvas.width*0.5;
@@ -314,15 +340,56 @@ window.addEventListener('load', () => {
         }
     });
 
+    /* uses body instead of canvas to detect every mouseup */
+    document.querySelector('body').addEventListener('mousemove', (event) => {
+        if (dragState) {
+            const zoom = simulation.settings.zoom; 
+            let dx, dy;
+
+            if (lastXDrag == null) {
+                lastXDrag = event.clientX;
+                dx = 0
+            }
+            else {
+                dx = event.clientX - lastXDrag;
+                dx /= zoom 
+                lastXDrag = event.clientX;
+            }
+
+            if (lastYDrag == null) {
+                lastYDrag = event.clientY;
+                dy = 0
+            }
+            else {
+                dy = event.clientY - lastYDrag; 
+                dy /= zoom;
+                lastYDrag = event.clientY;
+            }
+
+            simulation.xdrag += dx;
+            simulation.ydrag += dy;
+            simulation.renderStep();
+        }
+    });
+
+    /* uses body instead of canvas to detect every mouseup */
+    document.querySelector('body').addEventListener('mouseup', () => {
+        dragState = false;
+        lastXDrag = null;
+        lastYDrag = null;
+        simulation.renderStep();
+    });
+
     document.querySelector('#generateAllOverScreen').addEventListener('click', (event) => {
         event.preventDefault();
         const randomizedParticleList = [];
         const generateData = getGenerateData();
+        const zoom = simulation.settings.zoom;
 
-        const width = simulation.canvas.width;
-        const halfWidth = width*0.5;
-        const height = simulation.canvas.height;
-        const halfHeight = height*0.5;
+        const width = simulation.canvas.width/zoom;
+        const halfWidth = width*0.5 + simulation.xdrag;
+        const height = simulation.canvas.height/zoom;
+        const halfHeight = height*0.5 + simulation.ydrag;
 
         const distanceRatio = simulation.settings.dMulPx / (simulation.settings.dMulMilKm * 1e+9);
         const vx = generateData.vx * distanceRatio;
@@ -365,6 +432,18 @@ window.addEventListener('load', () => {
 
         simulation.particleList.push(particle);
         simulation.renderStep();
+    });
+
+    menuButtons['drag'].addEventListener('click', (event) => {
+        event.preventDefault();
+        if (menuButtons['drag'].getAttribute('data-checked') === 'false'){
+            menuButtons['drag'].setAttribute('src', 'svgs/drag-on.svg');
+            menuButtons['drag'].setAttribute('data-checked', 'true');
+        }
+        else {
+            menuButtons['drag'].setAttribute('src', 'svgs/drag-off.svg');
+            menuButtons['drag'].setAttribute('data-checked', 'false');
+        }
     });
 
     menuButtons['reset'].addEventListener('click', (event) => {

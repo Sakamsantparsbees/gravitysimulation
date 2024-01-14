@@ -4,7 +4,8 @@ https://sakamsantparsbees.github.io/gravitysimulation/
 <details>
   <summary>Changelog</summary>
   <p>
-    
+
+<!-- 
     V2.0.1:
     - Fixed gravitational issues
     
@@ -22,7 +23,7 @@ https://sakamsantparsbees.github.io/gravitysimulation/
     V2.0.5:
     - Added inital velocity settings
     - New faviicon
-    
+     -->
     V2.1:
     - Generate particles with desired position and ID feature implemented
     - Canceled selection features
@@ -32,6 +33,6 @@ https://sakamsantparsbees.github.io/gravitysimulation/
     V2.2:
     - Generate on click/touch feature implemented
     - Added new zoom and drag system
-    - Fixed possible dulplicated particle position in random generation process
+    - Random generation follows with zoom and drag
   </p>
 </details>

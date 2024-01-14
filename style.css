@@ -10,6 +10,12 @@ html, body {
     background-color: rgb(39, 41, 48);
 }
 
+html, body, canvas {
+    -webkit-touch-callout: none;
+    -webkit-user-select: none;
+    user-select: none;
+}
+
 hr {
     --hr-margin: 0.5em;
     margin-top: var(--hr-margin);

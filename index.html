@@ -19,6 +19,7 @@
         <img data-popup="play" data-original-src="svgs/play.svg" alt="Play/Start Simulation"></img>
         <img data-popup="pause" data-original-src="svgs/pause.svg" alt="Pause Simulation"></img>
         <img data-popup="end" data-original-src="svgs/end.svg" alt="End Simulation"></img>
+        <img data-popup="drag" data-checked="false" src="svgs/drag-off.svg" alt="Drag"></img>
         <div class="magnifier-wrap">
             <table>
                 <tr>
@@ -217,6 +218,9 @@
                     </tr>
                 </table>
                 <hr></hr>
+                <input type="checkbox" id="generateOnTouch"></input>
+                <label for="generateOnTouch">Generate on touch/click</label>
+                <hr></hr>
                 <div>Random Process</div>
                 <button id="generateAllOverScreen">Generate scattered all over screen</button>
                 <hr></hr>
@@ -235,8 +239,6 @@
                         <td><input type="number" id="y" placeholder="0"></input></td>
                     </tr>
                 </table>
-                <input type="checkbox" id="generateOnTouch"></input>
-                <label for="generateOnTouch">Generate on touch/click</label>
                 <button id="generateDesiredPosition">Generate</button>
                 <hr></hr>
             </div>
