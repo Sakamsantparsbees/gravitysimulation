@@ -1,0 +1,263 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="style.css">
+    <script src="script.js"></script>
+    <link rel="icon" 
+      type="image/jpg" 
+      href="svgs/favicon.jpg">
+    <title>Gravity Simulation</title>
+</head>
+<body>
+    <div id="menu">
+        <img data-popup="settings" data-original-src="svgs/settings.svg" alt="Settings"></img>
+        <img data-popup="list" data-original-src="svgs/particles.svg" alt="Particle(s) List"></img>
+        <img data-popup="insert" data-original-src="svgs/insert.svg" alt="Insert Particle(s)"></img>
+        <img data-popup="reset" data-original-src="svgs/reset.svg" alt="Reset Velocity"></img>
+        <img data-popup="play" data-original-src="svgs/play.svg" alt="Play/Start Simulation"></img>
+        <img data-popup="pause" data-original-src="svgs/pause.svg" alt="Pause Simulation"></img>
+        <img data-popup="end" data-original-src="svgs/end.svg" alt="End Simulation"></img>
+        <script>
+            (function() {
+                let isTouchScreen = false;
+                const menuIcons = document.currentScript.parentNode.getElementsByTagName('img');
+                const menu = document.currentScript.parentNode;
+                [...menuIcons]?.forEach(
+                    icon => {
+                        if (icon?.hasAttribute('data-original-src')) {
+                            icon.setAttribute('src', icon.getAttribute('data-original-src'));
+                        }
+                    }
+                );
+
+                const firstHiddens = ['svgs/pause.svg'];
+
+                [...menu?.children]?.forEach(
+                e => {
+                    if (e) {
+                        const wrapper = document.createElement('span');
+                        const parent = document.createElement('div');
+
+                        if (
+                            e.hasAttribute('data-original-src') &&
+                            firstHiddens.every(
+                                (svgPath) => (svgPath === e.getAttribute('data-original-src'))
+                            )
+                        )
+                        {
+                            wrapper.style.display = 'none'
+                        }
+
+                        e.setAttribute('draggable', false);
+
+                        if (e.hasAttribute('data-original-src')) {
+                            const originalSrc = e.getAttribute('data-original-src');
+
+                            e.addEventListener('mouseenter', () => {
+                                if (!isTouchScreen) {
+                                    e.setAttribute('src', `${originalSrc.slice(0, originalSrc.length - 4)}-hover.svg`);
+                                    isTouchScreen = false;
+                                }
+                            });
+
+                            e.addEventListener('mouseleave', () => {
+                                e.setAttribute('src', e.getAttribute('data-original-src'));
+                            });
+
+                            e.addEventListener('mouseup', () => {
+                                if (!isTouchScreen)
+                                    e.setAttribute('src', `${originalSrc.slice(0, originalSrc.length - 4)}-hover.svg`);
+                                isTouchScreen = false;
+                            });
+
+                            e.addEventListener('mousedown', () => {
+                                if (!isTouchScreen)
+                                    e.setAttribute('src', `${originalSrc.slice(0, originalSrc.length - 4)}-click.svg`);
+                            });
+
+                            e.addEventListener('touchstart', () => {
+                                isTouchScreen = true;
+                                if (isTouchScreen)
+                                    e.setAttribute('src', `${originalSrc.slice(0, originalSrc.length - 4)}-click.svg`);
+                            });
+
+                            e.addEventListener('touchend', () => {
+                                if (isTouchScreen)
+                                    e.setAttribute('src', e.getAttribute('data-original-src'));
+                            });
+
+                            e.addEventListener('touchcancel', () => {
+                                if (isTouchScreen)
+                                    e.setAttribute('src', e.getAttribute('data-original-src'));
+                            });
+                        }
+
+                        if (e.hasAttribute('data-popup')) e.addEventListener('click', () => {
+                            void Array.prototype.every.call(document.querySelector('#popups').children,
+                                popup => {
+                                    if (popup.hasAttribute('data-popup')) {
+                                        if (popup.getAttribute('data-popup') === e.getAttribute('data-popup')) {
+                                            menu.style.display = 'none';
+                                            popup.parentNode.style.display = 'block';
+                                            popup.style.display = 'block';
+                                            return false;
+                                        }
+                                        else return true;
+                                    }
+                                    else return true;
+                                }
+                            );
+                        });
+
+                        parent.appendChild(e);
+                        wrapper.appendChild(parent)
+                        document.querySelector('#menu').appendChild(wrapper);
+                    }
+                }
+            );
+            }());
+        </script>
+    </div>
+
+    <div id="popups">
+        <div data-popup="settings">
+            <div class="popup-inner-wrapper">
+                <button class="go-back-button">Go back</button>
+                <br/>
+                <div>Settings</div>
+                <hr></hr>
+                <div>Version 2.1</div>
+                <hr></hr>
+                <table>
+                    <tr>
+                        <td>G constant</td>
+                        <td><input type="number" id="G" placeholder="0.000000000066743"></td>
+                    </tr>
+                    <tr>
+                        <td>Acceleration limit (m)</td>
+                        <td><input type="number" id="aLim" placeholder=""></td>
+                    </tr>
+                    <tr>
+                        <td>Interstice distant minimum (m)</td>
+                        <td><input type="number" id="dMin" placeholder="0.000000001"></td>
+                    </tr>
+                    <tr>
+                        <td>Timestep (hr:sec)</td>
+                        <td><input type="number" id="timeStepHr" placeholder="0.0002777777"></td>
+                        <td>&nbsp;:</td>
+                        <td><input type="number" id="timeStepSec" placeholder="1"></td>
+                    </tr>
+                    <tr>
+                        <td>Distant multiplyer (mil&nbsp;km:px)</td>
+                        <td><input type="number" id="dMulMilKm" placeholder="0.000000001"></td>
+                        <td>&nbsp;:</td>
+                        <td><input type="number" id="dMulPx" placeholder="1"></td>
+                    </tr>
+                </table>
+                <input type="checkbox" id="renderCeil"></input>
+                <label for="renderCeil">Use Math.ceil() when render</label>
+                <br/>
+                <input type="checkbox" id="colorParticleByAcceleration"></input>
+                <label for="colorParticleByAcceleration">Color particle by accerleration</label>
+                <br/>
+                <button id="applySettings">Apply</button>
+        </div>
+        </div>
+        <div data-popup="insert">
+            <div class="popup-inner-wrapper">
+                <button class="go-back-button">Go back</button>
+                <br/>
+                <div>Particle Generator</div>
+                <hr></hr>
+                <table>
+                    <tr>
+                        <td>Particles amount</td>
+                        <td><input type="number" data-default-input id="particlesAmount" placeholder="0"></input></td>
+                    </tr>
+                    <tr>
+                        <td>Mass</td>
+                        <td><input type="number" data-default-input id="mass" placeholder="1"></input></td>
+                    </tr>
+                    <tr>
+                        <td>Size</td>
+                        <td><input type="number" data-default-input id="size" placeholder="1"></input></td>
+                    </tr>
+                    <tr>
+                        <td>Color</td>
+                        <td><input type="color" data-default-input id="color" placeholder="#ffffff"></input></td>
+                    </tr>
+                    <tr>
+                        <td>Initial Velocity X (m)</td>
+                        <td><input type="number" data-default-input id="xvelocity" placeholder="0"></input></td>
+                    </tr>
+                    <tr>
+                        <td>Initial Velocity Y (m)</td>
+                        <td><input type="number" data-default-input id="yvelocity" placeholder="0"></input></td>
+                    </tr>
+                </table>
+                <hr></hr>
+                <div>Random Process</div>
+                <input type="checkbox" id="generateCheckbox"></input>
+                <label for="generateCheckbox">Generate on touch/click</label>
+                <button id="generateAllOverScreen">Generate scattered all over screen</button>
+                <hr></hr>
+                <div>Desired Position Generate</div>
+                <table>
+                    <tr>
+                        <td>Id name</td>
+                        <td><input type="text" id="idName" placeholder=""></input></td>
+                    </tr>
+                    <tr>
+                        <td>X position</td>
+                        <td><input type="number" id="x" placeholder="0"></input></td>
+                    </tr>
+                    <tr>
+                        <td>Y position</td>
+                        <td><input type="number" id="y" placeholder="0"></input></td>
+                    </tr>
+                </table>
+                <button id="generateDesiredPosition">Generate</button>
+                <hr></hr>
+            </div>
+        </div>
+        <div data-popup="list">
+            <div class="popup-inner-wrapper">
+                <button class="go-back-button">Go back</button>
+                <br/>
+                <div id="particleList">
+                    <div></div>
+                </div>
+            </div>
+        </div>
+        <script>
+            (function() {
+                const popups = document.currentScript.parentNode;
+                const menu = document.querySelector('#menu');
+                const inputs = popups.getElementsByTagName('input');
+
+                [...inputs].forEach(
+                    input => {
+                        input.value = input.getAttribute('placeholder');
+                    }
+                );
+                
+                [...popups?.children]?.forEach(
+                    popup => {
+                        if (popup) {
+                            popup?.getElementsByClassName('go-back-button')[0]?.addEventListener('click', () => {
+                                menu.style.display = 'block';
+                                popups.style.display = 'none';
+                                popup.style.display = 'none';
+                            });
+                        }
+                    }
+                );
+            }());
+        </script>
+    </div>
+
+    <canvas id="canvas"></canvas>
+</body>
+</html>

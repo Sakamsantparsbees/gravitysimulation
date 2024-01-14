@@ -1,0 +1,90 @@
+* {
+    margin: 0px;
+    padding: 0px;
+}
+
+html, body {
+    overflow: hidden;
+    width: 100%;
+    height: 100%;
+    background-color: rgb(39, 41, 48);
+}
+
+hr {
+    --hr-margin: 0.5em;
+    margin-top: var(--hr-margin);
+    margin-bottom: var(--hr-margin);
+    color: white;
+}
+
+body > div {
+    position: absolute;
+    display: block;
+}
+
+#menu img {
+    -webkit-user-drag: none;
+    user-select: none;
+    -moz-user-select: none;
+    -webkit-user-select: none;
+    -ms-user-select: none;
+}
+
+/* .menu-icon-span-wrapper */ #menu > span { 
+    display: inline;
+}
+
+/* .menu-icon-div-wrapper */ #menu > span > div {
+    display: inline-block;
+    padding: 10px;
+    padding-right: 0px;
+    height: var(--menu-icon);
+}
+
+/* .menu-icon */ #menu > span > div > * {
+    --menu-icon: 30px;
+    width: var(--menu-icon);
+    height: var(--menu-icon);
+}
+
+#popups {
+    display: none;
+    width: 100%;
+    height: 100%;
+}
+
+#popups > div {
+    --popup-margin: 50px;
+    position: absolute;
+    display: none;
+    overflow: auto;
+    background-color: rgb(18, 18, 20, 0.3);
+    width: calc(100% - var(--popup-margin));
+    height: calc(100% - var(--popup-margin));
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+}
+
+.popup-inner-wrapper {
+    padding: 25px;
+    color: white;
+    font-size: 0.8em;
+    font-family: Arial, Helvetica, sans-serif;
+}
+
+input[type="number"] {
+    width: 100%;
+}
+
+td:first-child {
+    padding-right: 1em;
+}
+
+button {
+    display: block;
+}
+
+button + button {
+    margin-top: 3px;
+}

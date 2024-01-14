@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!-- Uploaded to: SVG Repo, www.svgrepo.com, Transformed by: SVG Repo Mixer Tools -->
+
+<svg
+   fill="#000000"
+   width="64px"
+   height="64px"
+   viewBox="0 0 1920 1920"
+   version="1.1"
+   id="svg7"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:svg="http://www.w3.org/2000/svg">
+  <defs
+     id="defs11">
+    <rect
+       x="14.222233"
+       y="14.641767"
+       width="45.898979"
+       height="46.18468"
+       id="rect10380" />
+  </defs>
+  <g
+     id="SVGRepo_bgCarrier"
+     stroke-width="0"
+     style="fill:#ffffff" />
+  <g
+     id="SVGRepo_tracerCarrier"
+     stroke-linecap="round"
+     stroke-linejoin="round"
+     style="fill:#ffffff" />
+  <g
+     id="SVGRepo_iconCarrier"
+     style="fill:#ffffff">
+    <path
+       d="m 960,0 v 213.333 c 411.627,0 746.667,334.934 746.667,746.667 0,411.733 -335.04,746.667 -746.667,746.667 -411.627,0 -746.667,-334.934 -746.667,-746.667 0,-197.013 78.4,-382.507 213.334,-520.747 v 254.08 H 640 V 106.667 H 53.333 V 320 h 191.04 C 88.64,494.08 0,720.96 0,960 c 0,529.28 430.613,960 960,960 529.387,0 960,-430.72 960,-960 C 1920,430.72 1489.387,0 960,0"
+       fill-rule="evenodd"
+       id="path4"
+       style="fill:#ffffff" />
+  </g>
+  <g
+     aria-label="v"
+     id="text11599"
+     style="font-size:2100px;line-height:1.25;font-family:AngsanaUPC;-inkscape-font-specification:AngsanaUPC;stroke-width:30">
+    <path
+       d="M 945.38818,1480.7323 732.10693,990.08289 Q 695.70557,907.02625 676.73584,883.95496 657.76611,860.37097 625.979,854.21863 v -25.12207 h 336.32813 v 25.12207 q -59.47266,0 -59.47266,46.65527 0,25.63477 29.73633,93.82324 l 104.0771,237.89066 83.5694,-205.0782 q 35.8887,-88.18355 35.8887,-124.58492 0,-46.65527 -69.2139,-48.70605 v -25.12207 h 207.1289 v 25.12207 q -32.2998,4.61426 -51.7822,26.66015 -19.4825,22.0459 -53.833,103.05176 L 977.17529,1480.7323 Z"
+       style="font-weight:bold;-inkscape-font-specification:'AngsanaUPC Bold';fill:#ffffff"
+       id="path17659" />
+  </g>
+</svg>
