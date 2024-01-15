@@ -90,7 +90,7 @@
                             });
 
                             e.addEventListener('touchstart', (event) => {
-                                
+                                event.preventDefault();
                                 isTouchScreen = true;
                                 if (isTouchScreen)
                                     e.setAttribute('src', `${originalSrc.slice(0, originalSrc.length - 4)}-click.svg`);
