@@ -66,7 +66,6 @@
                             const originalSrc = e.getAttribute('data-original-src');
 
                             e.addEventListener('mouseenter', (event) => {
-                                event.preventDefault();
                                 if (!isTouchScreen) {
                                     e.setAttribute('src', `${originalSrc.slice(0, originalSrc.length - 4)}-hover.svg`);
                                     isTouchScreen = false;
@@ -74,45 +73,44 @@
                             });
 
                             e.addEventListener('mouseleave', (event) => {
-                                event.preventDefault();
                                 e.setAttribute('src', e.getAttribute('data-original-src'));
                             });
 
                             e.addEventListener('mouseup', (event) => {
-                                event.preventDefault();
+                                
                                 if (!isTouchScreen)
                                     e.setAttribute('src', `${originalSrc.slice(0, originalSrc.length - 4)}-hover.svg`);
                                 isTouchScreen = false;
                             });
 
                             e.addEventListener('mousedown', (event) => {
-                                event.preventDefault();
+                                
                                 if (!isTouchScreen)
                                     e.setAttribute('src', `${originalSrc.slice(0, originalSrc.length - 4)}-click.svg`);
                             });
 
                             e.addEventListener('touchstart', (event) => {
-                                event.preventDefault();
+                                
                                 isTouchScreen = true;
                                 if (isTouchScreen)
                                     e.setAttribute('src', `${originalSrc.slice(0, originalSrc.length - 4)}-click.svg`);
                             });
 
                             e.addEventListener('touchend', (event) => {
-                                event.preventDefault();
+                                
                                 if (isTouchScreen)
                                     e.setAttribute('src', e.getAttribute('data-original-src'));
                             });
 
                             e.addEventListener('touchcancel', (event) => {
-                                event.preventDefault();
+                
                                 if (isTouchScreen)
                                     e.setAttribute('src', e.getAttribute('data-original-src'));
                             });
                         }
 
                         if (e.hasAttribute('data-popup')) e.addEventListener('click', (event) => {
-                            event.preventDefault();
+                            
                             void Array.prototype.every.call(document.querySelector('#popups').children,
                                 popup => {
                                     if (popup.hasAttribute('data-popup')) {
