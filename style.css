@@ -1,6 +1,6 @@
 * {
-    margin: 0px;
-    padding: 0px;
+    margin: 0;
+    padding: 0;
 }
 
 html, body {
@@ -17,9 +17,8 @@ html, body, canvas {
 }
 
 hr {
-    --hr-margin: 0.5em;
-    margin-top: var(--hr-margin);
-    margin-bottom: var(--hr-margin);
+    margin-top: 0.5em;
+    margin-bottom: 0.5em;
     color: white;
 }
 
@@ -33,17 +32,28 @@ img {
     user-select: none;
     -moz-user-select: none;
     -webkit-user-select: none;
-    -ms-user-select: none
+    -ms-user-select: none;
     -webkit-touch-callout: none;
     pointer-events: none;
 }
 
 #menu img {
     display: block;
+    width: 30px;
+    height: 30px;
+}
+
+/* #menu img {
+    display: block;
+    -webkit-user-drag: none;
+    user-select: none;
+    -moz-user-select: none;
+    -webkit-user-select: none;
+    -ms-user-select: none;
     --menu-icon: 30px;
     width: var(--menu-icon);
     height: var(--menu-icon);
-}
+} */
 
 /* .menu-icon-span-wrapper */ #menu > span { 
     display: inline;
@@ -53,7 +63,7 @@ img {
 /* .menu-icon-div-wrapper */ #menu > span > div {
     display: inline-block;
     padding: 10px;
-    padding-right: 0px;
+    padding-right: 0;
 }
 
 .magnifier-wrap {
@@ -70,8 +80,46 @@ img {
 .magnifier-wrap input[type="number"] {
     margin-left: 2px;
     margin-right: 2px;
-    width: 3.5em;
+    width: 3em;
     color: black;
+}
+
+@media only screen and (max-width: 450px) {
+    #menu img {
+        display: block;
+        width: 15px;
+        height: 15px;
+    }
+
+    /* .menu-icon-div-wrapper */ #menu > span > div {
+        display: inline-block;
+        padding: 5px;
+        padding-right: 0;
+    }
+
+    .magnifier-wrap {
+        font-size: 50%;
+        display: inline-block;
+        padding: 1.5px;
+        border: 1px white solid;
+        border-radius: 5px;
+    }
+    
+    .magnifier-wrap * {
+        color: white;
+    }
+
+    .magnifier-wrap table {
+        border-spacing: 0;
+    }
+    
+    .magnifier-wrap input[type="number"] {
+        font-size: 100%;
+        margin-left: 4px;
+        margin-right: 4px;
+        width: 4em;
+        color: black;
+    }
 }
 
 #popups {
@@ -81,13 +129,12 @@ img {
 }
 
 #popups > div {
-    --popup-margin: 50px;
     position: absolute;
     display: none;
     overflow: auto;
     background-color: rgb(18, 18, 20, 0.3);
-    width: calc(100% - var(--popup-margin));
-    height: calc(100% - var(--popup-margin));
+    width: calc(100% - 50px);
+    height: calc(100% - 50px);
     top: 50%;
     left: 50%;
     transform: translate(-50%, -50%);

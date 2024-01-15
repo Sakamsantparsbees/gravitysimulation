@@ -50,6 +50,9 @@
                     if (e && e !== document.currentScript) {
                         const wrapper = document.createElement('span');
                         const parent = document.createElement('div');
+                        parent.appendChild(e);
+                        wrapper.appendChild(parent);
+                        menu.appendChild(wrapper);
 
                         if (
                             e.hasAttribute('data-original-src') &&
@@ -65,52 +68,54 @@
                         if (e.hasAttribute('data-original-src')) {
                             const originalSrc = e.getAttribute('data-original-src');
 
-                            e.addEventListener('mouseenter', (event) => {
+                            parent.addEventListener('mouseenter', (event) => {
+                                event.preventDefault();
                                 if (!isTouchScreen) {
                                     e.setAttribute('src', `${originalSrc.slice(0, originalSrc.length - 4)}-hover.svg`);
                                     isTouchScreen = false;
                                 }
                             });
 
-                            e.addEventListener('mouseleave', (event) => {
+                            parent.addEventListener('mouseleave', (event) => {
+                                event.preventDefault();
                                 e.setAttribute('src', e.getAttribute('data-original-src'));
                             });
 
-                            e.addEventListener('mouseup', (event) => {
-                                
+                            parent.addEventListener('mouseup', (event) => {
+                                event.preventDefault();
                                 if (!isTouchScreen)
                                     e.setAttribute('src', `${originalSrc.slice(0, originalSrc.length - 4)}-hover.svg`);
                                 isTouchScreen = false;
                             });
 
-                            e.addEventListener('mousedown', (event) => {
-                                
+                            parent.addEventListener('mousedown', (event) => {
+                                event.preventDefault();
                                 if (!isTouchScreen)
                                     e.setAttribute('src', `${originalSrc.slice(0, originalSrc.length - 4)}-click.svg`);
                             });
 
-                            e.addEventListener('touchstart', (event) => {
+                            parent.addEventListener('touchstart', (event) => {
                                 event.preventDefault();
                                 isTouchScreen = true;
                                 if (isTouchScreen)
                                     e.setAttribute('src', `${originalSrc.slice(0, originalSrc.length - 4)}-click.svg`);
                             });
 
-                            e.addEventListener('touchend', (event) => {
-                                
+                            parent.addEventListener('touchend', (event) => {
+                                event.preventDefault();
                                 if (isTouchScreen)
                                     e.setAttribute('src', e.getAttribute('data-original-src'));
                             });
 
-                            e.addEventListener('touchcancel', (event) => {
-                
+                            parent.addEventListener('touchcancel', (event) => {
+                                event.preventDefault();
                                 if (isTouchScreen)
                                     e.setAttribute('src', e.getAttribute('data-original-src'));
                             });
                         }
 
-                        if (e.hasAttribute('data-popup')) e.addEventListener('click', (event) => {
-                            
+                        if (e.hasAttribute('data-popup')) parent.addEventListener('click', (event) => {
+                            event.preventDefault();
                             void Array.prototype.every.call(document.querySelector('#popups').children,
                                 popup => {
                                     if (popup.hasAttribute('data-popup')) {
@@ -126,10 +131,6 @@
                                 }
                             );
                         });
-
-                        parent.appendChild(e);
-                        wrapper.appendChild(parent)
-                        menu.appendChild(wrapper);
                     }
                     else if (e && e !== document.currentScript) {
                         menu.appendChild(e);
@@ -146,7 +147,7 @@
                 <br/>
                 <div>Settings</div>
                 <hr></hr>
-                <div>Version 2.2</div>
+                <div>Version 2.3</div>
                 <hr></hr>
                 <table>
                     <tr>
@@ -207,11 +208,11 @@
                         <td><input type="color" data-default-input id="color" placeholder="#ffffff"></input></td>
                     </tr>
                     <tr>
-                        <td>Initial Velocity X (mil&nbsp;km)</td>
+                        <td>Initial Velocity X (m)</td>
                         <td><input type="number" data-default-input id="xvelocity" placeholder="0"></input></td>
                     </tr>
                     <tr>
-                        <td>Initial Velocity Y (mil&nbsp;km)</td>
+                        <td>Initial Velocity Y (m)</td>
                         <td><input type="number" data-default-input id="yvelocity" placeholder="0"></input></td>
                     </tr>
                 </table>

@@ -378,10 +378,12 @@ window.addEventListener('load', () => {
 
     /* uses body instead of canvas to detect every mouseup */
     document.querySelector('body').addEventListener('mouseup', () => {
-        dragState = false;
-        lastXDrag = null;
-        lastYDrag = null;
-        simulation.renderStep();
+        if (dragState) {
+            dragState = false;
+            lastXDrag = null;
+            lastYDrag = null;
+            simulation.renderStep();
+        }
     });
 
     document.querySelector('#generateAllOverScreen').addEventListener('click', (event) => {
@@ -438,7 +440,7 @@ window.addEventListener('load', () => {
         simulation.renderStep();
     });
 
-    menuButtons['drag'].addEventListener('click', (event) => {
+    menuButtons['drag'].parentNode.addEventListener('click', (event) => {
         event.preventDefault();
         if (menuButtons['drag'].getAttribute('data-checked') === 'false'){
             menuButtons['drag'].setAttribute('src', 'svgs/drag-on.svg');
@@ -450,25 +452,25 @@ window.addEventListener('load', () => {
         }
     });
 
-    menuButtons['reset'].addEventListener('click', (event) => {
+    menuButtons['reset'].parentNode.addEventListener('click', (event) => {
         event.preventDefault();
         simulation.resetVelocity();
     });
 
-    menuButtons['play'].addEventListener('click', (event) => {
+    menuButtons['play'].parentNode.addEventListener('click', (event) => {
         event.preventDefault();
         menuButtons['play'].parentNode.parentNode.style.display = "none";
         menuButtons['pause'].parentNode.parentNode.style.display = "inline-block";
         simulation.start();
     });
-    menuButtons['pause'].addEventListener('click', (event) => {
+    menuButtons['pause'].parentNode.addEventListener('click', (event) => {
         event.preventDefault();
         menuButtons['pause'].parentNode.parentNode.style.display = "none";
         menuButtons['play'].parentNode.parentNode.style.display = "inline-block";
         simulation.pause();
     });
 
-    menuButtons['end'].addEventListener('click', (event) => {
+    menuButtons['end'].parentNode.addEventListener('click', (event) => {
         event.preventDefault();
         if (getComputedStyle(menuButtons['pause'].parentNode.parentNode).display !== 'none') {
             menuButtons['pause'].parentNode.parentNode.style.display = "none";
