@@ -1,4 +1,4 @@
-# gravitysimulation V2.3
+# gravitysimulation V2.3.1
 https://sakamsantparsbees.github.io/gravitysimulation/
 
 <details>
@@ -38,5 +38,8 @@ https://sakamsantparsbees.github.io/gravitysimulation/
 
     V2.3:
     - Reworked UI's system (Unable callout popup when hold touch on touch devices and more responsive)
+
+    V2.3.1:
+    - Fixed untabbable bug on touch devices
   </p>
 </details>
