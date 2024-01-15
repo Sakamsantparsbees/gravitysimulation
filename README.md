@@ -1,4 +1,4 @@
-# gravitysimulation V2.2
+# gravitysimulation V2.3
 https://sakamsantparsbees.github.io/gravitysimulation/
 
 <details>
