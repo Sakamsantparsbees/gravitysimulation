@@ -316,7 +316,7 @@ window.addEventListener('load', () => {
         };
     }
 
-    canvas.addEventListener('mousedown', (event) => {
+    canvas.addEventListener('touchstart', (event) => {
         event.preventDefault();
         if (menuButtons.drag.getAttribute('data-checked') === 'true') {
             dragState = true;
@@ -345,7 +345,7 @@ window.addEventListener('load', () => {
     });
 
     /* uses body instead of canvas to detect every mouseup */
-    document.querySelector('body').addEventListener('mousemove', (event) => {
+    document.querySelector('body').addEventListener('touchmove', (event) => {
         if (dragState) {
             const zoom = simulation.settings.zoom; 
             let dx, dy;
@@ -377,14 +377,17 @@ window.addEventListener('load', () => {
     });
 
     /* uses body instead of canvas to detect every mouseup */
-    document.querySelector('body').addEventListener('mouseup', () => {
+    function mouseUpHandler()  {
         if (dragState) {
             dragState = false;
             lastXDrag = null;
             lastYDrag = null;
             simulation.renderStep();
         }
-    });
+    }
+
+    document.querySelector('body').addEventListener('touchend', mouseUpHandler);
+    document.querySelector('body').addEventListener('touchend', mouseUpHandler);
 
     document.querySelector('#generateAllOverScreen').addEventListener('click', (event) => {
         event.preventDefault();

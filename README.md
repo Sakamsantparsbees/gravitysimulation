@@ -41,5 +41,8 @@ https://sakamsantparsbees.github.io/gravitysimulation/
 
     V2.3.1:
     - Fixed untabbable bug on touch devices
+
+    V2.3.2
+    - Dragging function in touching devices implemented
   </p>
 </details>
