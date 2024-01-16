@@ -69,7 +69,6 @@
                             const originalSrc = e.getAttribute('data-original-src');
 
                             parent.addEventListener('mouseenter', (event) => {
-                                console.log("menter")
                                 event.preventDefault();
                                 if (!isTouchScreen) {
                                     e.setAttribute('src', `${originalSrc.slice(0, originalSrc.length - 4)}-hover.svg`);
@@ -78,13 +77,11 @@
                             });
 
                             parent.addEventListener('mouseleave', (event) => {
-                                console.log("mleave")
                                 event.preventDefault();
                                 e.setAttribute('src', e.getAttribute('data-original-src'));
                             });
 
                             parent.addEventListener('mouseup', (event) => {
-                                console.log("mup")
                                 event.preventDefault();
                                 if (!isTouchScreen)
                                     e.setAttribute('src', `${originalSrc.slice(0, originalSrc.length - 4)}-hover.svg`);
@@ -92,34 +89,29 @@
                             });
 
                             parent.addEventListener('mousedown', (event) => {
-                                console.log("mdown")
                                 event.preventDefault();
                                 if (!isTouchScreen)
                                     e.setAttribute('src', `${originalSrc.slice(0, originalSrc.length - 4)}-click.svg`);
                             });
 
                             parent.addEventListener('touchstart', (event) => {
-                                console.log("tstart")
                                 isTouchScreen = true;
                                 if (isTouchScreen)
                                     e.setAttribute('src', `${originalSrc.slice(0, originalSrc.length - 4)}-click.svg`);
                             });
 
                             parent.addEventListener('touchend', (event) => {
-                                console.log("tend")
                                 if (isTouchScreen)
                                     e.setAttribute('src', e.getAttribute('data-original-src'));
                             });
 
                             parent.addEventListener('touchcancel', (event) => {
-                                console.log("tcancel")
                                 if (isTouchScreen)
                                     e.setAttribute('src', e.getAttribute('data-original-src'));
                             });
                         }
 
                         if (e.hasAttribute('data-popup')) parent.addEventListener('click', (event) => {
-                            console.log("parentClick")
                             event.preventDefault();
                             void Array.prototype.every.call(document.querySelector('#popups').children,
                                 popup => {

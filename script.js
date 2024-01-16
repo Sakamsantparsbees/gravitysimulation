@@ -316,16 +316,16 @@ window.addEventListener('load', () => {
         };
     }
 
-    canvas.addEventListener('touchstart', (event) => {
-        event.preventDefault();
+    function dragDown(event, touch=false) {
+        touch && event.preventDefault();
         if (menuButtons.drag.getAttribute('data-checked') === 'true') {
             dragState = true;
         }
         else if (insertInputs.generateOnTouch.checked) {
             const generateData = getGenerateData();
 
-            const x = event.clientX - simulation.canvas.width*0.5;
-            const y = event.clientY - simulation.canvas.height*0.5;
+            const x = (touch ? event.changedTouches[0].clientX : event.clientX) - simulation.canvas.width*0.5;
+            const y = (touch ? event.changedTouches[0].clientY : event.clientY) - simulation.canvas.height*0.5;
 
             const distanceRatio = simulation.settings.dMulPx / (simulation.settings.dMulMilKm * 1e+9);
             const vx = generateData.vx * distanceRatio;
@@ -342,42 +342,65 @@ window.addEventListener('load', () => {
             simulation.particleList.push(particle);
             simulation.renderStep();
         }
-    });
+    }
 
-    /* uses body instead of canvas to detect every mouseup */
-    document.querySelector('body').addEventListener('touchmove', (event) => {
+    function dragMove(event, touch=false) {
         if (dragState) {
             const zoom = simulation.settings.zoom; 
             let dx, dy;
 
-            if (lastXDrag == null) {
-                lastXDrag = event.clientX;
-                dx = 0
-            }
-            else {
-                dx = event.clientX - lastXDrag;
-                dx /= zoom 
-                lastXDrag = event.clientX;
+            if (touch) {
+                const clientX = (touch ? event.changedTouches[0].clientX : event.clientX);
+                const clientY = (touch ? event.changedTouches[0].clientY : event.clientY);
+                if (lastXDrag == null) {
+                    lastXDrag = clientX;
+                    dx = 0
+                }
+                else {
+                    dx = clientX - lastXDrag;
+                    dx /= zoom 
+                    lastXDrag = clientX;
+                }
+                if (lastYDrag == null) {
+                    lastYDrag = clientY;
+                    dy = 0
+                }
+                else {
+                    dy = clientY - lastYDrag; 
+                    dy /= zoom;
+                    lastYDrag = clientY;
+                }
             }
 
-            if (lastYDrag == null) {
-                lastYDrag = event.clientY;
-                dy = 0
-            }
             else {
-                dy = event.clientY - lastYDrag; 
-                dy /= zoom;
-                lastYDrag = event.clientY;
+                event.preventDefault();
+                if (lastXDrag == null) {
+                    lastXDrag = event.clientX;
+                    dx = 0
+                }
+                else {
+                    dx = event.clientX - lastXDrag;
+                    dx /= zoom 
+                    lastXDrag = event.clientX;
+                }
+                if (lastYDrag == null) {
+                    lastYDrag = event.clientY;
+                    dy = 0
+                }
+                else {
+                    dy = event.clientY - lastYDrag; 
+                    dy /= zoom;
+                    lastYDrag = event.clientY;
+                }
             }
 
             simulation.xdrag += dx;
             simulation.ydrag += dy;
             simulation.renderStep();
         }
-    });
+    }
 
-    /* uses body instead of canvas to detect every mouseup */
-    function mouseUpHandler()  {
+    function dragUp(event, touch=false) {
         if (dragState) {
             dragState = false;
             lastXDrag = null;
@@ -386,8 +409,15 @@ window.addEventListener('load', () => {
         }
     }
 
-    document.querySelector('body').addEventListener('touchend', mouseUpHandler);
-    document.querySelector('body').addEventListener('touchend', mouseUpHandler);
+    canvas.addEventListener('mousedown', (event) => {dragDown(event, false)});
+    // Uses body instead up canvas to detect more
+    document.querySelector('body').addEventListener('mousemove', (event) => {dragMove(event, false)});
+    document.querySelector('body').addEventListener('mouseup', (event) => {dragUp(event, false)});
+    
+    canvas.addEventListener('touchstart', (event) => {dragDown(event, true)});
+    document.querySelector('body').addEventListener('touchmove', (event) => {dragMove(event, true)});
+    document.querySelector('body').addEventListener('touchend', (event) => {dragUp(event, true)});
+    document.querySelector('body').addEventListener('touchcancel', (event) => {dragUp(event, true)});
 
     document.querySelector('#generateAllOverScreen').addEventListener('click', (event) => {
         event.preventDefault();
