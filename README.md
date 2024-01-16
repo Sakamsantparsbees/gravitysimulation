@@ -1,4 +1,4 @@
-# gravitysimulation V2.3.2
+# gravitysimulation V2.3.3
 https://sakamsantparsbees.github.io/gravitysimulation/
 
 <details>
@@ -44,5 +44,8 @@ https://sakamsantparsbees.github.io/gravitysimulation/
 
     V2.3.2
     - Dragging function in touching devices implemented
+
+    V2.3.3
+    - Fixed pause button shifted lower in webkit
   </p>
 </details>
