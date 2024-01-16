@@ -174,6 +174,7 @@ window.addEventListener('load', () => {
     let lastXDrag = null;
     let lastYDrag = null;
     const applySettingsButton = document.querySelector('#applySettings');
+    const particleListDiv = document.querySelector('#particleList');
     const zoomInput = document.querySelector('#zoom');
     const menuButtons = Object.fromEntries(
         [...document.querySelector('#menu').getElementsByTagName('img')].filter(
@@ -315,6 +316,12 @@ window.addEventListener('load', () => {
             y: y
         };
     }
+
+    function particleListDivAdd(p) {}
+
+    function particleListDivEdit(p) {}
+
+    function particleListDivRemove(p) {}
 
     function dragDown(event, touch=false) {
         touch && event.preventDefault();
@@ -492,22 +499,22 @@ window.addEventListener('load', () => {
 
     menuButtons['play'].parentNode.addEventListener('click', (event) => {
         event.preventDefault();
-        menuButtons['play'].parentNode.parentNode.style.display = "none";
-        menuButtons['pause'].parentNode.parentNode.style.display = "inline-block";
+        menuButtons['play'].parentNode.parentNode.parentNode.style.display = "none";
+        menuButtons['pause'].parentNode.parentNode.parentNode.style.display = "inline";
         simulation.start();
     });
     menuButtons['pause'].parentNode.addEventListener('click', (event) => {
         event.preventDefault();
-        menuButtons['pause'].parentNode.parentNode.style.display = "none";
-        menuButtons['play'].parentNode.parentNode.style.display = "inline-block";
+        menuButtons['pause'].parentNode.parentNode.parentNode.style.display = "none";
+        menuButtons['play'].parentNode.parentNode.parentNode.style.display = "inline";
         simulation.pause();
     });
 
     menuButtons['end'].parentNode.addEventListener('click', (event) => {
         event.preventDefault();
-        if (getComputedStyle(menuButtons['pause'].parentNode.parentNode).display !== 'none') {
-            menuButtons['pause'].parentNode.parentNode.style.display = "none";
-            menuButtons['play'].parentNode.parentNode.style.display = "inline-block";
+        if (getComputedStyle(menuButtons['pause'].parentNode.parentNode.parentNode).display !== 'none') {
+            menuButtons['pause'].parentNode.parentNode.parentNode.style.display = "none";
+            menuButtons['play'].parentNode.parentNode.parentNode.style.display = "inline";
         }
         simulation.end();
     });

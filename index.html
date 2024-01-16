@@ -49,10 +49,9 @@
                 e => {
                     if (e && e !== document.currentScript) {
                         const wrapper = document.createElement('span');
-                        const parent = document.createElement('div');
-                        parent.appendChild(e);
-                        wrapper.appendChild(parent);
-                        menu.appendChild(wrapper);
+                        const parent = document.createElement('div')
+                        const innerparent = document.createElement('div');
+            
 
                         if (
                             e.hasAttribute('data-original-src') &&
@@ -68,7 +67,7 @@
                         if (e.hasAttribute('data-original-src')) {
                             const originalSrc = e.getAttribute('data-original-src');
 
-                            parent.addEventListener('mouseenter', (event) => {
+                            innerparent.addEventListener('mouseenter', (event) => {
                                 event.preventDefault();
                                 if (!isTouchScreen) {
                                     e.setAttribute('src', `${originalSrc.slice(0, originalSrc.length - 4)}-hover.svg`);
@@ -76,42 +75,42 @@
                                 }
                             });
 
-                            parent.addEventListener('mouseleave', (event) => {
+                            innerparent.addEventListener('mouseleave', (event) => {
                                 event.preventDefault();
                                 e.setAttribute('src', e.getAttribute('data-original-src'));
                             });
 
-                            parent.addEventListener('mouseup', (event) => {
+                            innerparent.addEventListener('mouseup', (event) => {
                                 event.preventDefault();
                                 if (!isTouchScreen)
                                     e.setAttribute('src', `${originalSrc.slice(0, originalSrc.length - 4)}-hover.svg`);
                                 isTouchScreen = false;
                             });
 
-                            parent.addEventListener('mousedown', (event) => {
+                            innerparent.addEventListener('mousedown', (event) => {
                                 event.preventDefault();
                                 if (!isTouchScreen)
                                     e.setAttribute('src', `${originalSrc.slice(0, originalSrc.length - 4)}-click.svg`);
                             });
 
-                            parent.addEventListener('touchstart', (event) => {
+                            innerparent.addEventListener('touchstart', (event) => {
                                 isTouchScreen = true;
                                 if (isTouchScreen)
                                     e.setAttribute('src', `${originalSrc.slice(0, originalSrc.length - 4)}-click.svg`);
                             });
 
-                            parent.addEventListener('touchend', (event) => {
+                            innerparent.addEventListener('touchend', (event) => {
                                 if (isTouchScreen)
                                     e.setAttribute('src', e.getAttribute('data-original-src'));
                             });
 
-                            parent.addEventListener('touchcancel', (event) => {
+                            innerparent.addEventListener('touchcancel', (event) => {
                                 if (isTouchScreen)
                                     e.setAttribute('src', e.getAttribute('data-original-src'));
                             });
                         }
 
-                        if (e.hasAttribute('data-popup')) parent.addEventListener('click', (event) => {
+                        if (e.hasAttribute('data-popup')) innerparent.addEventListener('click', (event) => {
                             event.preventDefault();
                             void Array.prototype.every.call(document.querySelector('#popups').children,
                                 popup => {
@@ -128,6 +127,11 @@
                                 }
                             );
                         });
+
+                        innerparent.appendChild(e)
+                        parent.appendChild(innerparent);
+                        wrapper.appendChild(parent);
+                        menu.appendChild(wrapper);
                     }
                     else if (e && e !== document.currentScript) {
                         menu.appendChild(e);
@@ -243,6 +247,8 @@
             <div class="popup-inner-wrapper">
                 <button class="go-back-button">Go back</button>
                 <br/>
+                <div>Particle List</div>
+                <hr></hr>
                 <div id="particleList">
                     <div></div>
                 </div>
