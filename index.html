@@ -4,10 +4,10 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="style.css">
-    <script src="script.js"></script>
+    <script src="./script.js"></script>
     <link rel="icon" 
-      type="image/jpg" 
-      href="svgs/favicon.jpg">
+      type="image/png" 
+      href="svgs/favicon.png">
     <title>Gravity Simulation</title>
 </head>
 <body>
@@ -108,11 +108,12 @@
                                 if (isTouchScreen)
                                     e.setAttribute('src', e.getAttribute('data-original-src'));
                             });
+                            innerparent.classList.add('pointer');
                         }
 
                         if (e.hasAttribute('data-popup')) innerparent.addEventListener('click', (event) => {
                             event.preventDefault();
-                            void Array.prototype.every.call(document.querySelector('#popups').children,
+                            void Array.prototype.every.call(document.querySelector('.popups').children,
                                 popup => {
                                     if (popup.hasAttribute('data-popup')) {
                                         if (popup.getAttribute('data-popup') === e.getAttribute('data-popup')) {
@@ -141,14 +142,14 @@
         </script>
     </div>
 
-    <div id="popups">
+    <div class="popups">
         <div data-popup="settings">
             <div class="popup-inner-wrapper">
                 <button class="go-back-button">Go back</button>
                 <br/>
                 <div>Settings</div>
                 <hr></hr>
-                <div>Version pre(beta) 2.3.3</div>
+                <div>Version 2.4 Beta</div>
                 <hr></hr>
                 <table>
                     <tr>
@@ -216,10 +217,7 @@
                         <td>Initial Velocity Y (m)</td>
                         <td><input type="number" data-default-input id="yvelocity" placeholder="0"></input></td>
                     </tr>
-                </table>
-                <hr></hr>
-                <input type="checkbox" id="generateOnTouch"></input>
-                <label for="generateOnTouch">Generate on touch/click</label>
+                </table>                
                 <hr></hr>
                 <div>Random Process</div>
                 <button id="generateAllOverScreen">Generate scattered all over screen</button>
@@ -239,19 +237,54 @@
                         <td><input type="number" id="y" placeholder="0"></input></td>
                     </tr>
                 </table>
+                <input type="checkbox" id="generateOnTouch"></input>
+                <label for="generateOnTouch">Generate on touch/click</label>
                 <button id="generateDesiredPosition">Generate</button>
                 <hr></hr>
             </div>
         </div>
         <div data-popup="list">
             <div class="popup-inner-wrapper">
-                <button class="go-back-button">Go back</button>
-                <br/>
-                <div>Particle List</div>
+                <button class="go-back-button">Go back</button><button id="toTemplateButton">Templates</button>
+                <br/><br/>
+                <span>Particle List</span>
                 <hr></hr>
-                <div id="particleList">
-                    <div></div>
+                <div id="particleList"></div>
+            </div>
+        </div>
+        <div data-popup="template">
+            <div class="popup-inner-wrapper">
+                <button id="templateGoBackButton">Go back</button>
+                <br/>
+                <span>Templates</span>
+                <hr></hr>
+                <div class="save-template">
+                    <i>Save new template...</i>
+                    <input type="text" id="templateInput" placeholder="Untitled"></input>
+                    <button id="saveTemplateButton">Save</button>
+                    <button id="exportTemplateButton">Export as JSON</button>
                 </div>
+                <button id="importTemplateButton">Load template from JSON</button>
+                <hr></hr>
+                <div id="defaultTemplateList">
+                    <div>Default Templates</div>
+                </div>
+                <div id="templateList"></div>
+            </div>
+        </div>
+        <div data-popup="templateExport">
+            <div class="popup-inner-wrapper">
+                <button id="templateExportGoBackButton">Go back</button>
+                <br/>
+                <textarea readonly id="templateExportTextArea"></textarea>
+            </div>
+        </div>
+        <div data-popup="templateImport">
+            <div class="popup-inner-wrapper">
+                <button id="templateImportGoBackButton">Go back</button>
+                <br/>
+                <button id="confirmImport">Confirm Import</button>
+                <textarea id="templateImportTextArea"></textarea>
             </div>
         </div>
         <script>
@@ -271,8 +304,8 @@
                         if (popup) {
                             popup?.getElementsByClassName('go-back-button')[0]?.addEventListener('click', () => {
                                 menu.style.display = 'block';
-                                popups.style.display = 'none';
-                                popup.style.display = 'none';
+                                popups.removeAttribute('style');
+                                popup.removeAttribute('style');
                             });
                         }
                     }

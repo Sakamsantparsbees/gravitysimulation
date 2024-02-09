@@ -1,4 +1,4 @@
-# gravitysimulation preV2.3.3
+# gravitysimulation V2.4BETA
 https://sakamsantparsbees.github.io/gravitysimulation/
 
 <details>
@@ -45,7 +45,10 @@ https://sakamsantparsbees.github.io/gravitysimulation/
     V2.3.2
     - Dragging function in touching devices implemented
 
-    preV2.3.3
+    V2.4BETA
+    - Added template system
+    - Reworked Particle system
     - Fixed pause button shifted lower in webkit
+    - Fixed on generate bug when zoomed
   </p>
 </details>
