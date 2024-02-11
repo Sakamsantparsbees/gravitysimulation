@@ -1,4 +1,4 @@
-# gravitysimulation V2.4BETA2TEST9
+# gravitysimulation V2.4
 https://sakamsantparsbees.github.io/gravitysimulation/
 
 <details>
@@ -45,45 +45,12 @@ https://sakamsantparsbees.github.io/gravitysimulation/
     V2.3.2
     - Dragging function in touching devices implemented
 
-    V2.4BETA
+    V2.4
     - Added template system
     - Reworked Particle system
+    - Added wheel zoom and pinch zoom
     - Fixed pause button shifted lower in webkit
     - Fixed on generate bug when zoomed
-
-    V2.4BETA1
-    - Removed hr between templates
-    - Added solar system
     - Fixed gravitational attraction miscalculated formula
-
-    V2.4BETA2TEST1
-    - Added wheel zoom and pinch zoom (Real Feature)
-    - Particles vx vy ax ay property syncs with distance ratio (Real Feature)
-
-    V2.4BETA2TEST2
-    - Replace favicon (DB purpose)
-
-    V2.4BETA2TEST3
-    - Embedded favicon to html base64 (DB purpose)
-    - Added hypotenuse while pinching (DB purpose)
-
-    V2.4BETA2TEST4
-    - Added debug for touches (DB purpose)
-
-    V2.4BETA2TEST5
-    - Added index for debugging (DB purpose)
-
-    V2.4BETA2TEST6
-    - changed favicon png to ico (attemp to fix unshown icon on ipad google) (DB purpose)
-
-    V2.4BETA2TEST7
-    - Used realfavicongenerator website tool and icon package
-
-    V2.4BETA2TEST8
-    - Forgot to add folder in href icon
-
-    V2.4BETA2TEST9
-    - Trying with href things
-    - I'm not going to update version or changelog in this beta 2 test anymore, There's going to be alot of debuggings
   </p>
 </details>
