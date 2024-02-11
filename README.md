@@ -84,5 +84,6 @@ https://sakamsantparsbees.github.io/gravitysimulation/
 
     V2.4BETA2TEST9
     - Trying with href things
+    - I'm not going to update version or changelog in this beta 2 test anymore, There's going to be alot of debuggings
   </p>
 </details>
