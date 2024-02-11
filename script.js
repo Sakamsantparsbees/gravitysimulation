@@ -25,6 +25,7 @@ class Particle {
 
 //TODO: Add color by force system
 //TODO: Add pinch zoom and scroll zoom system
+//TODO: Fix favicon bug on ipad google
 
 class Simulation {
     constructor (canvas, particleList, settings) {
@@ -202,6 +203,11 @@ window.addEventListener('load', () => {
     let lastX2Drag, lastY2Drag;
     let last1Id, last2Id;
     let lastDistance;
+    const debugDiv = document.getElementById('debugDiv');
+    function debugDivFunc() {
+        debugDiv.textContent = 
+        `lastX1Drag:${lastX1Drag}, lastX2Drag:${lastX2Drag}, lastX2Drag:${lastX2Drag}, lastY2Drag:${lastY2Drag}, last1Id:${last1Id}, last2Id:${last2Id}, lastDistance:${lastDistance}`;
+    }
     const defaultTemplates = [
         {
             "templateName":"Solar system",
@@ -578,7 +584,6 @@ window.addEventListener('load', () => {
     
                         else {
                             let foundDup = false;
-                            // TODO: FIX DUP NAME PROB
                             do {
                                 foundDup = false;
                                 for (const t of templates) {
@@ -731,6 +736,7 @@ window.addEventListener('load', () => {
                     lastX1Drag = event.touches[0].clientX;
                     lastY1Drag = event.touches[0].clientY;
                     last1Id = event.touches[0].identifier;
+                    debugDivFunc();
                 }
                 else if (event.touches.length == 2) {
                     const index = event.touches.findIndex((touch) => (touch.identifier != last1Id));
@@ -738,6 +744,7 @@ window.addEventListener('load', () => {
                     lastY2Drag = event.touches[index].clientY;
                     last2Id = event.touches[index].identifier;
                     lastDistance = Math.hypot((lastX2Drag-lastX1Drag), (lastX2Drag-lastY1Drag));
+                    debugDivFunc();
                 }
             }
             else {
@@ -804,6 +811,7 @@ window.addEventListener('load', () => {
                     dy = clientY - lastY1Drag; 
                     dy /= simulation.settings.zoom;
                     lastY1Drag = clientY;
+                    debugDivFunc();
                 }
                 else if (event.touches.length == 2) {
                     const index1 = event.touches.findIndex((touch) => (touch.identifier == last1Id));
@@ -816,7 +824,7 @@ window.addEventListener('load', () => {
                         (client2X-client1X),
                         (client2Y-client1Y)
                     );
-                    
+
                     simulation.settings.zoom = lastDistance-distance * 0.001
                     zoomInput.value = (simulation.settings.zoom).toString();
                     lastDistance = distance;
@@ -830,6 +838,7 @@ window.addEventListener('load', () => {
                     dy /= simulation.settings.zoom;
                     lastY1Drag = client1Y;
                     lastY2Drag = client2Y;
+                    debugDivFunc();
                 }
             }
 
