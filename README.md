@@ -1,4 +1,4 @@
-# gravitysimulation V2.4BETA2TEST7
+# gravitysimulation V2.4BETA2TEST8
 https://sakamsantparsbees.github.io/gravitysimulation/
 
 <details>
@@ -73,10 +73,13 @@ https://sakamsantparsbees.github.io/gravitysimulation/
     V2.4BETA2TEST5
     - Added index for debugging (DB purpose)
 
-    V2.2BETA2TEST6
+    V2.4BETA2TEST6
     - changed favicon png to ico (attemp to fix unshown icon on ipad google) (DB purpose)
 
-    V2.2BETA2TEST7
+    V2.4BETA2TEST7
     - Used realfavicongenerator website tool and icon package
+
+    V2.4BETA2TEST8
+    - Forgot to add folder in href icon
   </p>
 </details>
