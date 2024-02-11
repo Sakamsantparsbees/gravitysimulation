@@ -1,4 +1,4 @@
-# gravitysimulation V2.4BETA1TEST4
+# gravitysimulation V2.4BETA2TEST5
 https://sakamsantparsbees.github.io/gravitysimulation/
 
 <details>
@@ -69,5 +69,8 @@ https://sakamsantparsbees.github.io/gravitysimulation/
 
     V2.4BETA2TEST4
     - Added debug for touches
+
+    V2.4BETA2TEST5
+    - Added index for debugging
   </p>
 </details>

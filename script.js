@@ -204,9 +204,10 @@ window.addEventListener('load', () => {
     let last1Id, last2Id;
     let lastDistance;
     const debugDiv = document.getElementById('debugDiv');
-    function debugDivFunc() {
+    function debugDivFunc(additional="") {
         debugDiv.textContent = 
-        `lastX1Drag:${lastX1Drag}, lastX2Drag:${lastX2Drag}, lastX2Drag:${lastX2Drag}, lastY2Drag:${lastY2Drag}, last1Id:${last1Id}, last2Id:${last2Id}, lastDistance:${lastDistance}`;
+        `lastX1Drag:${lastX1Drag}, lastY1Drag:${lastY1Drag}, lastX2Drag:${lastX2Drag}, lastY2Drag:${lastY2Drag}, last1Id:${last1Id}, last2Id:${last2Id}, lastDistance:${lastDistance}`;
+        debugDiv.textContent += `, ${additional}`;
     }
     const defaultTemplates = [
         {
@@ -744,7 +745,7 @@ window.addEventListener('load', () => {
                     lastY2Drag = event.touches[index].clientY;
                     last2Id = event.touches[index].identifier;
                     lastDistance = Math.hypot((lastX2Drag-lastX1Drag), (lastX2Drag-lastY1Drag));
-                    debugDivFunc();
+                    debugDivFunc(index);
                 }
             }
             else {
