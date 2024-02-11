@@ -1,4 +1,4 @@
-# gravitysimulation V2.4BETA1TEST2
+# gravitysimulation V2.4BETA1TEST3
 https://sakamsantparsbees.github.io/gravitysimulation/
 
 <details>
@@ -62,5 +62,9 @@ https://sakamsantparsbees.github.io/gravitysimulation/
 
     V2.4BETA2TEST2
     - Replace favicon
+
+    V2.4BETA2TEST3
+    - Embedded favicon to html base64
+    - Added hyoptenuse while pinching
   </p>
 </details>

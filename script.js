@@ -792,7 +792,6 @@ window.addEventListener('load', () => {
 
     function dragMove(event, touch=false) {
         if (dragState) {
-            const zoom = simulation.settings.zoom; 
             let dx, dy;
 
             if (touch) {
@@ -800,10 +799,10 @@ window.addEventListener('load', () => {
                     const clientX = event.touches[0].clientX;
                     const clientY = event.touches[0].clientY;
                     dx = clientX - lastX1Drag;
-                    dx /= zoom 
+                    dx /= simulation.settings.zoom 
                     lastX1Drag = clientX;
                     dy = clientY - lastY1Drag; 
-                    dy /= zoom;
+                    dy /= simulation.settings.zoom;
                     lastY1Drag = clientY;
                 }
                 else if (event.touches.length == 2) {
@@ -813,12 +812,22 @@ window.addEventListener('load', () => {
                     const client1Y = event.touches[index1].clientY;
                     const client2X = event.touches[index2].clientX;
                     const client2Y = event.touches[index2].clientY;
+                    const distance = Math.hypot(
+                        (client2X-client1X),
+                        (client2Y-client1Y)
+                    );
+                    
+                    simulation.settings.zoom = lastDistance-distance * 0.001
+                    zoomInput.value = (simulation.settings.zoom).toString();
+                    lastDistance = distance;
+
                     dx = (client1X - lastX1Drag) + (client2X - lastX2Drag);
-                    dx /= zoom 
+                    dx /= simulation.settings.zoom 
                     lastX1Drag = client1X;
                     lastX2Drag = client2X;
+
                     dy = (client1Y - lastY1Drag) + (client2Y - lastY2Drag);
-                    dy /= zoom;
+                    dy /= simulation.settings.zoom;
                     lastY1Drag = client1Y;
                     lastY2Drag = client2Y;
                 }
@@ -829,10 +838,10 @@ window.addEventListener('load', () => {
                 const clientX = event.clientX;
                 const clientY = event.clientY;
                 dx = clientX - lastX1Drag;
-                dx /= zoom 
+                dx /= simulation.settings.zoom 
                 lastX1Drag = clientX;
                 dy = clientY - lastY1Drag; 
-                dy /= zoom;
+                dy /= simulation.settings.zoom;
                 lastY1Drag = clientY;
             }
 
