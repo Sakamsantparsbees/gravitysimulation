@@ -1,4 +1,4 @@
-# gravitysimulation V2.4BETA2TEST5
+# gravitysimulation V2.4BETA2TEST6
 https://sakamsantparsbees.github.io/gravitysimulation/
 
 <details>
@@ -54,23 +54,26 @@ https://sakamsantparsbees.github.io/gravitysimulation/
     V2.4BETA1
     - Removed hr between templates
     - Added solar system
-    - Fixed gravitational attraction miscalculations
+    - Fixed gravitational attraction miscalculated formula
 
     V2.4BETA2TEST1
-    - Added wheel zoom and pinch zoom
-    - Particles vx vy ax ay property syncs with distance ratio
+    - Added wheel zoom and pinch zoom (Real Feature)
+    - Particles vx vy ax ay property syncs with distance ratio (Real Feature)
 
     V2.4BETA2TEST2
-    - Replace favicon
+    - Replace favicon (DB purpose)
 
     V2.4BETA2TEST3
-    - Embedded favicon to html base64
-    - Added hypotenuse while pinching
+    - Embedded favicon to html base64 (DB purpose)
+    - Added hypotenuse while pinching (DB purpose)
 
     V2.4BETA2TEST4
-    - Added debug for touches
+    - Added debug for touches (DB purpose)
 
     V2.4BETA2TEST5
-    - Added index for debugging
+    - Added index for debugging (DB purpose)
+
+    V2.2BETA2TEST6
+    - changed favicon png to ico (attemp to fix unshown icon on ipad google) (DB purpose)
   </p>
 </details>

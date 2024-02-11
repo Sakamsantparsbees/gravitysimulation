@@ -203,12 +203,6 @@ window.addEventListener('load', () => {
     let lastX2Drag, lastY2Drag;
     let last1Id, last2Id;
     let lastDistance;
-    const debugDiv = document.getElementById('debugDiv');
-    function debugDivFunc(additional="") {
-        debugDiv.textContent = 
-        `lastX1Drag:${lastX1Drag}, lastY1Drag:${lastY1Drag}, lastX2Drag:${lastX2Drag}, lastY2Drag:${lastY2Drag}, last1Id:${last1Id}, last2Id:${last2Id}, lastDistance:${lastDistance}`;
-        debugDiv.textContent += `, ${additional}`;
-    }
     const defaultTemplates = [
         {
             "templateName":"Solar system",
@@ -227,6 +221,8 @@ window.addEventListener('load', () => {
         }
     ];
     const wheelIncrement = 2.5;
+    let pinchFactor = 0.01;
+    window.pinchFactor = (n) => (pinchFactor = n);
     const particleListDiv = document.getElementById('particleList');
     const applySettingsButton = document.getElementById('applySettings');
     const zoomInput = document.getElementById('zoom');
@@ -737,15 +733,13 @@ window.addEventListener('load', () => {
                     lastX1Drag = event.touches[0].clientX;
                     lastY1Drag = event.touches[0].clientY;
                     last1Id = event.touches[0].identifier;
-                    debugDivFunc();
                 }
                 else if (event.touches.length == 2) {
-                    const index = event.touches.findIndex((touch) => (touch.identifier != last1Id));
+                    const index = [...event.touches].findIndex((touch) => (touch.identifier != last1Id));
                     lastX2Drag = event.touches[index].clientX;
                     lastY2Drag = event.touches[index].clientY;
                     last2Id = event.touches[index].identifier;
                     lastDistance = Math.hypot((lastX2Drag-lastX1Drag), (lastX2Drag-lastY1Drag));
-                    debugDivFunc(index);
                 }
             }
             else {
@@ -812,11 +806,14 @@ window.addEventListener('load', () => {
                     dy = clientY - lastY1Drag; 
                     dy /= simulation.settings.zoom;
                     lastY1Drag = clientY;
-                    debugDivFunc();
                 }
                 else if (event.touches.length == 2) {
-                    const index1 = event.touches.findIndex((touch) => (touch.identifier == last1Id));
-                    const index2 = event.touches.findIndex((touch) => (touch.identifier == last2Id));
+                    const index1 = [...event.touches].findIndex((touch) => (touch.identifier == last1Id));
+                    let index2 = [...event.touches].findIndex((touch) => (touch.identifier == last2Id));
+                    if (!index2) {
+                        index2 = [...event.touches].findIndex((touch) => (touch.identifier != last1Id));
+                        last2Id = event.touches[index2].identifier
+                    }
                     const client1X = event.touches[index1].clientX;
                     const client1Y = event.touches[index1].clientY;
                     const client2X = event.touches[index2].clientX;
@@ -825,9 +822,12 @@ window.addEventListener('load', () => {
                         (client2X-client1X),
                         (client2Y-client1Y)
                     );
-
-                    simulation.settings.zoom = lastDistance-distance * 0.001
-                    zoomInput.value = (simulation.settings.zoom).toString();
+                    const ratio = (lastDistance/distance)
+                    simulation.settings.zoom =
+                    (ratio > 1)
+                        ? simulation.settings.zoom * (1 - (ratio * pinchFactor))
+                        : simulation.settings.zoom * (1 + (ratio * pinchFactor));
+                    zoomInput.value = (Math.round(simulation.settings.zoom*1e+4) * 1e-2).toString();
                     lastDistance = distance;
 
                     dx = (client1X - lastX1Drag) + (client2X - lastX2Drag);
@@ -839,7 +839,6 @@ window.addEventListener('load', () => {
                     dy /= simulation.settings.zoom;
                     lastY1Drag = client1Y;
                     lastY2Drag = client2Y;
-                    debugDivFunc();
                 }
             }
 
