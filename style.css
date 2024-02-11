@@ -66,6 +66,10 @@ img {
     padding-right: 0;
 }
 
+.pointer, button {
+    cursor: pointer;
+}
+
 .magnifier-wrap {
     display: inline-block;
     padding: 3px;
@@ -122,13 +126,13 @@ img {
     }
 }
 
-#popups {
+.popups {
     display: none;
     width: 100%;
     height: 100%;
 }
 
-#popups > div {
+.popups > div {
     position: absolute;
     display: none;
     overflow: auto;
@@ -147,18 +151,76 @@ img {
     font-family: Arial, Helvetica, sans-serif;
 }
 
-#popups input[type="number"] {
+.popups input[type="number"] {
     width: 100%;
 }
 
-#popups td:first-child {
+.particle-content {
+    margin: 0.5em 0 0 0.5em;
+    padding: 0.5em;
+    width: calc(100% - 0.5em);
+    border: #ffffff solid 2px;
+    border-radius: 3px;
+}
+.particle-content td:not(:first-child) {
+    border-top: #ffffff solid 2px;
+    border-left: #ffffff solid 2px;
+    width: 100%;
+    padding: 0.1em;
+    padding-left: 0.3em;
+    border-bottom: #ffffff solid 2px;
+}
+
+.particle-content td:first-child {
+    border-top: #ffffff solid 2px;
+    border-right: #ffffff solid 2px;
+    padding: 0.1em;
+    padding-left: 0.3em;
+    border-bottom: #ffffff solid 2px;
+}
+
+.popups td:first-child {
     padding-right: 1em;
+}
+
+div[data-popup="list"] .go-back-button {
+    display: inline-block;
+}
+
+#particleList button {
+    margin-left: 3px;
+    display: inline;
+}
+
+#toTemplateButton {
+    margin-left: 3px;
+    display: inline-block;
+}
+
+#defaultTemplateList button, #templateList button {
+    margin-left: 3px;
+    display: inline-block;
+}
+
+.save-template * {
+    display: inline-block;
+}
+
+.save-template input {
+    width: min-content;
 }
 
 button {
     display: block;
 }
 
-button + button {
-    margin-top: 3px;
+div[data-popup="templateExport"] > div, div[data-popup="templateImport"] > div {
+    height: 100%;
+}
+
+#templateExportTextArea, #templateImportTextArea {
+    overflow: scroll;
+    resize: none;
+    width: 100%;
+    height: 100%;
 }

@@ -5,9 +5,13 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="style.css">
     <script src="script.js"></script>
-    <link rel="icon" 
-      type="image/jpg" 
-      href="svgs/favicon.jpg">
+    <link rel="apple-touch-icon" sizes="144x144" href="favicons/apple-touch-icon.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="favicons/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="favicons/favicon-16x16.png">
+    <link rel="manifest" href="favicons/site.webmanifest">
+    <link rel="mask-icon" href="favicons/safari-pinned-tab.svg" color="#5bbad5">
+    <meta name="msapplication-TileColor" content="#da532c">
+    <meta name="theme-color" content="#ffffff">
     <title>Gravity Simulation</title>
 </head>
 <body>
@@ -49,10 +53,9 @@
                 e => {
                     if (e && e !== document.currentScript) {
                         const wrapper = document.createElement('span');
-                        const parent = document.createElement('div');
-                        parent.appendChild(e);
-                        wrapper.appendChild(parent);
-                        menu.appendChild(wrapper);
+                        const parent = document.createElement('div')
+                        const innerparent = document.createElement('div');
+            
 
                         if (
                             e.hasAttribute('data-original-src') &&
@@ -68,7 +71,7 @@
                         if (e.hasAttribute('data-original-src')) {
                             const originalSrc = e.getAttribute('data-original-src');
 
-                            parent.addEventListener('mouseenter', (event) => {
+                            innerparent.addEventListener('mouseenter', (event) => {
                                 event.preventDefault();
                                 if (!isTouchScreen) {
                                     e.setAttribute('src', `${originalSrc.slice(0, originalSrc.length - 4)}-hover.svg`);
@@ -76,58 +79,66 @@
                                 }
                             });
 
-                            parent.addEventListener('mouseleave', (event) => {
+                            innerparent.addEventListener('mouseleave', (event) => {
                                 event.preventDefault();
                                 e.setAttribute('src', e.getAttribute('data-original-src'));
                             });
 
-                            parent.addEventListener('mouseup', (event) => {
+                            innerparent.addEventListener('mouseup', (event) => {
                                 event.preventDefault();
                                 if (!isTouchScreen)
                                     e.setAttribute('src', `${originalSrc.slice(0, originalSrc.length - 4)}-hover.svg`);
                                 isTouchScreen = false;
                             });
 
-                            parent.addEventListener('mousedown', (event) => {
+                            innerparent.addEventListener('mousedown', (event) => {
                                 event.preventDefault();
                                 if (!isTouchScreen)
                                     e.setAttribute('src', `${originalSrc.slice(0, originalSrc.length - 4)}-click.svg`);
                             });
 
-                            parent.addEventListener('touchstart', (event) => {
+                            innerparent.addEventListener('touchstart', (event) => {
                                 isTouchScreen = true;
                                 if (isTouchScreen)
                                     e.setAttribute('src', `${originalSrc.slice(0, originalSrc.length - 4)}-click.svg`);
                             });
 
-                            parent.addEventListener('touchend', (event) => {
+                            innerparent.addEventListener('touchend', (event) => {
                                 if (isTouchScreen)
                                     e.setAttribute('src', e.getAttribute('data-original-src'));
                             });
 
-                            parent.addEventListener('touchcancel', (event) => {
+                            innerparent.addEventListener('touchcancel', (event) => {
                                 if (isTouchScreen)
                                     e.setAttribute('src', e.getAttribute('data-original-src'));
                             });
                         }
 
-                        if (e.hasAttribute('data-popup')) parent.addEventListener('click', (event) => {
-                            event.preventDefault();
-                            void Array.prototype.every.call(document.querySelector('#popups').children,
-                                popup => {
-                                    if (popup.hasAttribute('data-popup')) {
-                                        if (popup.getAttribute('data-popup') === e.getAttribute('data-popup')) {
-                                            menu.style.display = 'none';
-                                            popup.parentNode.style.display = 'block';
-                                            popup.style.display = 'block';
-                                            return false;
+                        if (e.hasAttribute('data-popup')) {
+                            innerparent.classList.add('pointer');
+                            innerparent.addEventListener('click', (event) => {
+                                event.preventDefault();
+                                void Array.prototype.every.call(document.querySelector('.popups').children,
+                                    popup => {
+                                        if (popup.hasAttribute('data-popup')) {
+                                            if (popup.getAttribute('data-popup') === e.getAttribute('data-popup')) {
+                                                menu.style.display = 'none';
+                                                popup.parentNode.style.display = 'block';
+                                                popup.style.display = 'block';
+                                                return false;
+                                            }
+                                            else return true;
                                         }
                                         else return true;
                                     }
-                                    else return true;
-                                }
-                            );
-                        });
+                                );
+                            });
+                        }
+
+                        innerparent.appendChild(e)
+                        parent.appendChild(innerparent);
+                        wrapper.appendChild(parent);
+                        menu.appendChild(wrapper);
                     }
                     else if (e && e !== document.currentScript) {
                         menu.appendChild(e);
@@ -137,14 +148,14 @@
         </script>
     </div>
 
-    <div id="popups">
+    <div class="popups">
         <div data-popup="settings">
             <div class="popup-inner-wrapper">
                 <button class="go-back-button">Go back</button>
                 <br/>
                 <div>Settings</div>
                 <hr></hr>
-                <div>Version 2.3.2</div>
+                <div>Version 2.4</div>
                 <hr></hr>
                 <table>
                     <tr>
@@ -212,10 +223,7 @@
                         <td>Initial Velocity Y (m)</td>
                         <td><input type="number" data-default-input id="yvelocity" placeholder="0"></input></td>
                     </tr>
-                </table>
-                <hr></hr>
-                <input type="checkbox" id="generateOnTouch"></input>
-                <label for="generateOnTouch">Generate on touch/click</label>
+                </table>                
                 <hr></hr>
                 <div>Random Process</div>
                 <button id="generateAllOverScreen">Generate scattered all over screen</button>
@@ -235,17 +243,54 @@
                         <td><input type="number" id="y" placeholder="0"></input></td>
                     </tr>
                 </table>
+                <input type="checkbox" id="generateOnTouch"></input>
+                <label for="generateOnTouch">Generate on touch/click</label>
                 <button id="generateDesiredPosition">Generate</button>
                 <hr></hr>
             </div>
         </div>
         <div data-popup="list">
             <div class="popup-inner-wrapper">
-                <button class="go-back-button">Go back</button>
+                <button class="go-back-button">Go back</button><button id="toTemplateButton">Templates</button>
+                <br/><br/>
+                <span>Particle List</span>
+                <hr></hr>
+                <div id="particleList"></div>
+            </div>
+        </div>
+        <div data-popup="template">
+            <div class="popup-inner-wrapper">
+                <button id="templateGoBackButton">Go back</button>
                 <br/>
-                <div id="particleList">
-                    <div></div>
+                <span>Templates</span>
+                <hr></hr>
+                <div class="save-template">
+                    <i>Save new template...</i>
+                    <input type="text" id="templateInput" placeholder="Untitled"></input>
+                    <button id="saveTemplateButton">Save</button>
+                    <button id="exportTemplateButton">Export as JSON</button>
                 </div>
+                <button id="importTemplateButton">Load template from JSON</button>
+                <hr></hr>
+                <div id="defaultTemplateList">
+                    <div>Default Templates</div>
+                </div>
+                <div id="templateList"></div>
+            </div>
+        </div>
+        <div data-popup="templateExport">
+            <div class="popup-inner-wrapper">
+                <button id="templateExportGoBackButton">Go back</button>
+                <br/>
+                <textarea readonly id="templateExportTextArea"></textarea>
+            </div>
+        </div>
+        <div data-popup="templateImport">
+            <div class="popup-inner-wrapper">
+                <button id="templateImportGoBackButton">Go back</button>
+                <br/>
+                <button id="confirmImport">Confirm Import</button>
+                <textarea id="templateImportTextArea"></textarea>
             </div>
         </div>
         <script>
@@ -265,14 +310,21 @@
                         if (popup) {
                             popup?.getElementsByClassName('go-back-button')[0]?.addEventListener('click', () => {
                                 menu.style.display = 'block';
-                                popups.style.display = 'none';
-                                popup.style.display = 'none';
+                                popups.removeAttribute('style');
+                                popup.removeAttribute('style');
                             });
                         }
                     }
                 );
             }());
         </script>
+    </div>
+    <div style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); color: white;">
+        <!-- let lastX1Drag, lastY1Drag;
+    let lastX2Drag, lastY2Drag;
+    let last1Id, last2Id;
+    let lastDistance; -->
+        <div id="debugDiv"></div>
     </div>
 
     <canvas id="canvas"></canvas>

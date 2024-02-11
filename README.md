@@ -1,4 +1,4 @@
-# gravitysimulation V2.3.2
+# gravitysimulation V2.4
 https://sakamsantparsbees.github.io/gravitysimulation/
 
 <details>
@@ -37,12 +37,20 @@ https://sakamsantparsbees.github.io/gravitysimulation/
     - Fixed zero mass acceraltion bug
 
     V2.3:
-    - Reworked UI's system (Unable callout popup when hold touch on touch devices and more responsive)
+    - Fixed UI system (Unable callout popup when hold touch on touch devices and more responsive)
 
     V2.3.1:
     - Fixed untabbable bug on touch devices
 
     V2.3.2
     - Dragging function in touching devices implemented
+
+    V2.4
+    - Added template system
+    - Reworked Particle system
+    - Added wheel zoom and pinch zoom
+    - Fixed pause button shifted lower in webkit
+    - Fixed on generate bug when zoomed
+    - Fixed gravitational attraction miscalculated formula
   </p>
 </details>

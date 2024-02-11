@@ -23,10 +23,6 @@ class Particle {
     }
 }
 
-//TODO: Add color by force system
-//TODO: Add pinch zoom and scroll zoom system
-//TODO: Fix favicon bug on ipad google
-
 class Simulation {
     constructor (canvas, particleList, settings) {
         this.canvas = canvas;
@@ -55,14 +51,14 @@ class Simulation {
                     const y1 = p1.y;
                     const x2 = p2.x;
                     const y2 = p2.y;
-                    const dx = (x2-x1) * distanceRatio;
-                    const dy = (y2-y1) * distanceRatio;
-                    let distance = Math.hypot(dx, dy);
+                    const dx = x2-x1;
+                    const dy = y2-y1;
+                    let distance = Math.sqrt((dx*dx)+(dy*dy)) * distanceRatio;
                     distance =
                         (distance < this.settings.dMin) ?
                             this.settings.dMin
                             : distance;
-                    const F = (p1.mass * p2.mass)/(distance*distance);
+                    const F = (p1.mass * p2.mass)/distance;
                     let Fx = (F * ((dx)/distance));
                     Fx = isNaN(Fx) ? 0 : Fx;
                     let Fy = (F * ((dy)/distance));
@@ -75,8 +71,7 @@ class Simulation {
                 p1.ax *= this.settings.G / p1.mass;
                 p1.ay *= this.settings.G / p1.mass;
 
-
-                if (Math.hypot(p1.ax, p1.ay) > this.settings.aLim) {
+                if (Math.sqrt((p1.ax)*(p1.ax)+(p1.ay)*(p1.ay)) > this.settings.aLim) {
                     p1.ax = this.settings.aLim;
                     p1.ay = this.settings.aLim;
                 }
@@ -124,21 +119,10 @@ class Simulation {
             simulationObj.renderStep();
 
             for (const entry of this.openingParticleDiv) {
-                const distanceRatio = this.settings.dMulMilKm * 1e+9 / this.settings.dMulPx;
                 const p = entry[0];
                 const attrList = entry[1];
                 for (const pair of attrList) {
-                    switch (pair[0]) {
-                        case 'vx':
-                        case 'vy':
-                        case 'ax':
-                        case 'ay':
-                            pair[1].nodeValue = p[pair[0]] * distanceRatio;
-                            break;
-                        default:
-                            pair[1].nodeValue = p[pair[0]];
-                            break;
-                    }
+                    pair[1].nodeValue = p[pair[0]];
                 }
             }
 
@@ -178,6 +162,9 @@ class Simulation {
     }
 
     end() {
+        const ctx = this.canvas.getContext('2d');
+        const width = this.canvas.width;
+        const height = this.canvas.height;
         const particleListDiv = document.getElementById('particleList');
         [...particleListDiv.childNodes].forEach((node) => {
             if (node.nodeType == 1) {
@@ -195,34 +182,30 @@ class Simulation {
     }
 }
 
-
+const defaultTemplates = [
+    // {
+    //     templateName: "Solar system",
+    //     particleList: [
+    //         {
+    //             x: 0,
+    //             y: 0,
+    //             mass: 1,
+    //             size: 10,
+    //             color: "#ffffff",
+    //             vx: 0,
+    //             vy: 0,
+    //             id: "the SUNNN",
+    //             ax: 0,
+    //             ay: 0,
+    //         }
+    //     ],
+    // },
+];
 
 window.addEventListener('load', () => {
     let dragState = false;
-    let lastX1Drag, lastY1Drag;
-    let lastX2Drag, lastY2Drag;
-    let last1Id, last2Id;
-    let lastDistance;
-    const defaultTemplates = [
-        {
-            "templateName":"Solar system",
-            "particleList":[
-                {"x":0,"y":0,"mass":1.989e+30,"size":20,"color":"#ffd500","vx":0,"vy":0,"id":"Sun","ax":0,"ay":0},
-                {"x":57.9,"y":0,"mass":3.285e+23,"size":5,"color":"#ababab","vx":0,"vy":-47870,"id":"Mercury","ax":0,"ay":0},
-                {"x":108,"y":0,"mass":4.867e+24,"size":9,"color":"#ff4d00","vx":0,"vy":-35020,"id":"Venus","ax":0,"ay":0},
-                {"x":149,"y":0,"mass":5.97219e+24,"size":15,"color":"#4287f5","vx":0,"vy":-29780,"id":"Earth","ax":0,"ay":0},
-                {"x":149.3844,"y":0,"mass":7.34767309e+22,"size":5,"color":"#f6f1d5","vx":0,"vy":-30802,"id":"Moon","ax":0,"ay":0},
-                {"x":228,"y":0,"mass":6.39e+23,"size":8,"color":"#c1440e","vx":0,"vy":-24080,"id":"Mars","ax":0,"ay":0},
-                {"x":778,"y":0,"mass":1.89813e+27,"size":30,"color":"#e3dccb","vx":0,"vy":-13060,"id":"Jupiter","ax":0,"ay":0},
-                {"x":1400,"y":0,"mass":5.683e+26,"size":25,"color":"#d8ca9d","vx":0,"vy":-9680,"id":"Saturn","ax":0,"ay":0},
-                {"x":2900,"y":0,"mass":8.681e+25,"size":20,"color":"#d1e7e7","vx":0,"vy":-6790,"id":"Uranus","ax":0,"ay":0},
-                {"x":4500,"y":0,"mass":1.024e+26,"size":20,"color":"#5b5ddf","vx":0,"vy":-5450,"id":"Neptune","ax":0,"ay":0}
-            ]
-        }
-    ];
-    const wheelIncrement = 2.5;
-    let pinchFactor = 0.01;
-    window.pinchFactor = (n) => (pinchFactor = n);
+    let lastXDrag = null;
+    let lastYDrag = null;
     const particleListDiv = document.getElementById('particleList');
     const applySettingsButton = document.getElementById('applySettings');
     const zoomInput = document.getElementById('zoom');
@@ -328,24 +311,6 @@ window.addEventListener('load', () => {
                     :
                         parseFloat(zoomInput.placeholder) * 0.01
                 );
-        for (const entry of simulation.openingParticleDiv) {
-            const distanceRatio = simulation.settings.dMulMilKm * 1e+9 / simulation.settings.dMulPx;
-            const p = entry[0];
-            const attrList = entry[1];
-            for (const pair of attrList) {
-                switch (pair[0]) {
-                    case 'vx':
-                    case 'vy':
-                    case 'ax':
-                    case 'ay':
-                        pair[1].nodeValue = p[pair[0]] * distanceRatio;
-                        break;
-                    default:
-                        pair[1].nodeValue = p[pair[0]];
-                        break;
-                }
-            }
-        }
         simulation.renderStep();
     });
 
@@ -407,25 +372,15 @@ window.addEventListener('load', () => {
             );
             loadButton.addEventListener('click', () => {
                 template.particleList.forEach((preP) => {
-                    const distanceRatio = simulation.settings.dMulPx / (simulation.settings.dMulMilKm * 1e+9);
                     const prePcopy = {};
-                    let foundDup = false;
                     Object.entries(preP).forEach((pair) => {
                         prePcopy[pair[0]] = pair[1]
                     })
-                    do {
-                        foundDup = false;
-                        for (const p of simulation.particleList) {
-                            if (p.id === prePcopy.id) {
-                                prePcopy.id = `${prePcopy.id}#`;
-                                foundDup = true;
-                            }
+                    for (const p of simulation.particleList) {
+                        if (p.id === prePcopy.id) {
+                            prePcopy.id = `${prePcopy.id}#`;
                         }
-                    } while (foundDup)
-                    prePcopy.vx *= distanceRatio;
-                    prePcopy.vy *= distanceRatio;
-                    prePcopy.ax *= distanceRatio;
-                    prePcopy.ay *= distanceRatio;
+                    }
                     const P = new Particle(prePcopy);
                     createParticleDivChild(P);
                     simulation.particleList.push(P);
@@ -531,16 +486,11 @@ window.addEventListener('load', () => {
                         localStorage.setItem('templates', JSON.stringify([template]));
                     }
                     else {
-                        let foundDup = false;
-                        do {
-                            foundDup = false;
-                            for (const t of templates) {
-                                if (t.templateName === template.templateName) {
-                                    template.templateName = `${template.templateName}#`;
-                                    foundDup = true;
-                                }
+                        for (const t of templates) {
+                            if (t.templateName === template.templateName) {
+                                template.templateName = `${template.templateName}#`;
                             }
-                        } while (foundDup)
+                        }
                         templates.push(template);
                         localStorage.setItem('templates', JSON.stringify(templates));
                     }
@@ -580,16 +530,11 @@ window.addEventListener('load', () => {
                         }
     
                         else {
-                            let foundDup = false;
-                            do {
-                                foundDup = false;
-                                for (const t of templates) {
-                                    if (t.templateName === template.templateName) {
-                                        template.templateName = `${template.templateName}#`;
-                                        foundDup = true;
-                                    }
+                            for (const t of templates) {
+                                if (t.templateName === template.templateName) {
+                                    template.templateName = `${template.templateName}#`;
                                 }
-                            } while (foundDup);
+                            }
                             templates.push(template);
                             localStorage.setItem('templates', JSON.stringify(templates));
                         }
@@ -667,22 +612,12 @@ window.addEventListener('load', () => {
                     content.style.display = "none";
                 }
                 else {
-                    const distanceRatio = simulation.settings.dMulMilKm * 1e+9 / simulation.settings.dMulPx;
                     simulation.openingParticleDiv.push([particle, attributes]);
                     title.checked = true;
-                    attributes.forEach((pair) => {
-                        if (pair[1] != null) {
-                            switch (pair[0]) {
-                                case 'vx':
-                                case 'vy':
-                                case 'ax':
-                                case 'ay':
-                                    pair[1].nodeValue = particle[pair[0]] * distanceRatio;
-                                    break;
-                                default:
-                                    pair[1].nodeValue = particle[pair[0]];
-                                    break;
-                            }
+                    attributes.forEach(pair => {
+                        const node = pair[1];
+                        if (node != null) {
+                            node.nodeValue = `${particle[pair[0]]}`
                         };
                     });
                     title.firstChild.nodeValue = `▼ ${particle.id}`;
@@ -726,33 +661,15 @@ window.addEventListener('load', () => {
 
     function dragDown(event, touch=false) {
         touch && event.preventDefault();
-        if ((touch || event.buttons == 1) && menuButtons.drag.getAttribute('data-checked') === 'true') {
+        if (menuButtons.drag.getAttribute('data-checked') === 'true') {
             dragState = true;
-            if (touch) {
-                if (event.touches.length == 1) {
-                    lastX1Drag = event.touches[0].clientX;
-                    lastY1Drag = event.touches[0].clientY;
-                    last1Id = event.touches[0].identifier;
-                }
-                else if (event.touches.length == 2) {
-                    const index = [...event.touches].findIndex((touch) => (touch.identifier != last1Id));
-                    lastX2Drag = event.touches[index].clientX;
-                    lastY2Drag = event.touches[index].clientY;
-                    last2Id = event.touches[index].identifier;
-                    lastDistance = Math.hypot((lastX2Drag-lastX1Drag), (lastX2Drag-lastY1Drag));
-                }
-            }
-            else {
-                lastX1Drag = event.clientX;
-                lastY1Drag = event.clientY;
-            }
         }
-        else if ((touch || event.buttons == 1) && insertInputs.generateOnTouch.checked) {
+        else if (insertInputs.generateOnTouch.checked) {
             const generateData = getGenerateData();
             const zoom = simulation.settings.zoom;
 
-            const cx = (touch ? event.touches[0].clientX : event.clientX);
-            const cy = (touch ? event.touches[0].clientY : event.clientY);
+            const cx = (touch ? event.changedTouches[0].clientX : event.clientX);
+            const cy = (touch ? event.changedTouches[0].clientY : event.clientY);
             const calculatedX = (cx-(simulation.xdrag*zoom)-(simulation.canvas.width*0.5))/zoom;
             const calculatedY = (cy-(simulation.ydrag*zoom)-(simulation.canvas.height*0.5))/zoom;
 
@@ -761,17 +678,12 @@ window.addEventListener('load', () => {
             const vy = generateData.vy * distanceRatio;
 
             let id = generateData.id;
-            let foundDup = false;
 
-            do {
-                foundDup = false;
-                for (const p of simulation.particleList) {
-                    if (p.id === id) {
-                        id = `${id}#`;
-                        foundDup = true;
-                    }
+            for (const p of simulation.particleList) {
+                if (p.id === id) {
+                    id = `${id}#`;
                 }
-            } while (foundDup)
+            }
 
             const particle = new Particle(
                 {
@@ -794,64 +706,52 @@ window.addEventListener('load', () => {
 
     function dragMove(event, touch=false) {
         if (dragState) {
+            const zoom = simulation.settings.zoom; 
             let dx, dy;
 
             if (touch) {
-                if (event.touches.length == 1) {
-                    const clientX = event.touches[0].clientX;
-                    const clientY = event.touches[0].clientY;
-                    dx = clientX - lastX1Drag;
-                    dx /= simulation.settings.zoom 
-                    lastX1Drag = clientX;
-                    dy = clientY - lastY1Drag; 
-                    dy /= simulation.settings.zoom;
-                    lastY1Drag = clientY;
+                const clientX = (touch ? event.changedTouches[0].clientX : event.clientX);
+                const clientY = (touch ? event.changedTouches[0].clientY : event.clientY);
+                if (lastXDrag == null) {
+                    lastXDrag = clientX;
+                    dx = 0
                 }
-                else if (event.touches.length == 2) {
-                    const index1 = [...event.touches].findIndex((touch) => (touch.identifier == last1Id));
-                    let index2 = [...event.touches].findIndex((touch) => (touch.identifier == last2Id));
-                    if (!index2) {
-                        index2 = [...event.touches].findIndex((touch) => (touch.identifier != last1Id));
-                        last2Id = event.touches[index2].identifier
-                    }
-                    const client1X = event.touches[index1].clientX;
-                    const client1Y = event.touches[index1].clientY;
-                    const client2X = event.touches[index2].clientX;
-                    const client2Y = event.touches[index2].clientY;
-                    const distance = Math.hypot(
-                        (client2X-client1X),
-                        (client2Y-client1Y)
-                    );
-                    const ratio = (lastDistance/distance)
-                    simulation.settings.zoom =
-                    (ratio > 1)
-                        ? simulation.settings.zoom * (1 - (ratio * pinchFactor))
-                        : simulation.settings.zoom * (1 + (ratio * pinchFactor));
-                    zoomInput.value = (Math.round(simulation.settings.zoom*1e+4) * 1e-2).toString();
-                    lastDistance = distance;
-
-                    dx = (client1X - lastX1Drag) + (client2X - lastX2Drag);
-                    dx /= simulation.settings.zoom 
-                    lastX1Drag = client1X;
-                    lastX2Drag = client2X;
-
-                    dy = (client1Y - lastY1Drag) + (client2Y - lastY2Drag);
-                    dy /= simulation.settings.zoom;
-                    lastY1Drag = client1Y;
-                    lastY2Drag = client2Y;
+                else {
+                    dx = clientX - lastXDrag;
+                    dx /= zoom 
+                    lastXDrag = clientX;
+                }
+                if (lastYDrag == null) {
+                    lastYDrag = clientY;
+                    dy = 0
+                }
+                else {
+                    dy = clientY - lastYDrag; 
+                    dy /= zoom;
+                    lastYDrag = clientY;
                 }
             }
 
             else {
                 event.preventDefault();
-                const clientX = event.clientX;
-                const clientY = event.clientY;
-                dx = clientX - lastX1Drag;
-                dx /= simulation.settings.zoom 
-                lastX1Drag = clientX;
-                dy = clientY - lastY1Drag; 
-                dy /= simulation.settings.zoom;
-                lastY1Drag = clientY;
+                if (lastXDrag == null) {
+                    lastXDrag = event.clientX;
+                    dx = 0
+                }
+                else {
+                    dx = event.clientX - lastXDrag;
+                    dx /= zoom 
+                    lastXDrag = event.clientX;
+                }
+                if (lastYDrag == null) {
+                    lastYDrag = event.clientY;
+                    dy = 0
+                }
+                else {
+                    dy = event.clientY - lastYDrag; 
+                    dy /= zoom;
+                    lastYDrag = event.clientY;
+                }
             }
 
             simulation.xdrag += dx;
@@ -860,37 +760,24 @@ window.addEventListener('load', () => {
         }
     }
 
-    function dragUp(event) {
+    function dragUp(event, touch=false) {
         if (dragState) {
             dragState = false;
+            lastXDrag = null;
+            lastYDrag = null;
             simulation.renderStep();
         }
     }
 
     canvas.addEventListener('mousedown', (event) => {dragDown(event, false)});
     // Uses body instead up canvas to detect more
-    window.addEventListener('mousemove', (event) => {dragMove(event, false)});
-    window.addEventListener('mouseup', (event) => {dragUp(event)});
-    canvas.addEventListener('wheel', (event) => {
-        if (menuButtons.drag.getAttribute('data-checked') === 'true') {
-            const y = event.deltaY;
-            if (y < 0) {
-                zoomInput.value = (parseFloat(zoomInput.value) + wheelIncrement).toString();
-                simulation.settings.zoom += wheelIncrement * 0.01;
-                simulation.renderStep();
-            }
-            else {
-                zoomInput.value = (parseFloat(zoomInput.value) - wheelIncrement).toString();
-                simulation.settings.zoom -= wheelIncrement * 0.01;
-                simulation.renderStep();
-            }
-        }
-    });
+    document.querySelector('body').addEventListener('mousemove', (event) => {dragMove(event, false)});
+    document.querySelector('body').addEventListener('mouseup', (event) => {dragUp(event, false)});
     
     canvas.addEventListener('touchstart', (event) => {dragDown(event, true)});
     document.querySelector('body').addEventListener('touchmove', (event) => {dragMove(event, true)});
-    document.querySelector('body').addEventListener('touchend', (event) => {dragUp(event)});
-    document.querySelector('body').addEventListener('touchcancel', (event) => {dragUp(event)});
+    document.querySelector('body').addEventListener('touchend', (event) => {dragUp(event, true)});
+    document.querySelector('body').addEventListener('touchcancel', (event) => {dragUp(event, true)});
 
     document.getElementById('generateAllOverScreen').addEventListener('click', (event) => {
         event.preventDefault();
@@ -936,17 +823,12 @@ window.addEventListener('load', () => {
         const vx = generateData.vx * distanceRatio;
         const vy = generateData.vy * distanceRatio;
         let id = generateData.id;
-        let foundDup = false;
 
-        do {
-            foundDup = false;
-            for (const p of simulation.particleList) {
-                if (p.id === id) {
-                    id = `${id}#`;
-                    foundDup = true;
-                }
+        for (const p of simulation.particleList) {
+            if (p.id === id) {
+                id = `${id}#`;
             }
-        } while (foundDup)
+        }
 
         const particle = new Particle(
             {
