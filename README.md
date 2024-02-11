@@ -1,4 +1,4 @@
-# gravitysimulation V2.4BETA
+# gravitysimulation V2.4BETA1
 https://sakamsantparsbees.github.io/gravitysimulation/
 
 <details>
@@ -50,5 +50,10 @@ https://sakamsantparsbees.github.io/gravitysimulation/
     - Reworked Particle system
     - Fixed pause button shifted lower in webkit
     - Fixed on generate bug when zoomed
+
+    V2.4BETA1
+    - Removed hr between templates
+    - Added solar system
+    - Fixed gravitational attraction miscalculations
   </p>
 </details>

@@ -214,7 +214,7 @@ button {
     display: block;
 }
 
-div[data-popup="templateExport"] > div{
+div[data-popup="templateExport"] > div, div[data-popup="templateImport"] > div {
     height: 100%;
 }
 

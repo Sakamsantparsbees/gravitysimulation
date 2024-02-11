@@ -23,8 +23,6 @@ class Particle {
     }
 }
 
-//TODO: Add color by force system
-
 class Simulation {
     constructor (canvas, particleList, settings) {
         this.canvas = canvas;
@@ -53,14 +51,14 @@ class Simulation {
                     const y1 = p1.y;
                     const x2 = p2.x;
                     const y2 = p2.y;
-                    const dx = (x2-x1) * distanceRatio;
-                    const dy = (y2-y1) * distanceRatio;
-                    let distance = Math.sqrt((dx*dx)+(dy*dy));
+                    const dx = x2-x1;
+                    const dy = y2-y1;
+                    let distance = Math.sqrt((dx*dx)+(dy*dy)) * distanceRatio;
                     distance =
                         (distance < this.settings.dMin) ?
                             this.settings.dMin
                             : distance;
-                    const F = (p1.mass * p2.mass)/(distance*distance);
+                    const F = (p1.mass * p2.mass)/distance;
                     let Fx = (F * ((dx)/distance));
                     Fx = isNaN(Fx) ? 0 : Fx;
                     let Fy = (F * ((dy)/distance));
@@ -72,7 +70,6 @@ class Simulation {
                 }
                 p1.ax *= this.settings.G / p1.mass;
                 p1.ay *= this.settings.G / p1.mass;
-
 
                 if (Math.sqrt((p1.ax)*(p1.ax)+(p1.ay)*(p1.ay)) > this.settings.aLim) {
                     p1.ax = this.settings.aLim;
@@ -165,6 +162,9 @@ class Simulation {
     }
 
     end() {
+        const ctx = this.canvas.getContext('2d');
+        const width = this.canvas.width;
+        const height = this.canvas.height;
         const particleListDiv = document.getElementById('particleList');
         [...particleListDiv.childNodes].forEach((node) => {
             if (node.nodeType == 1) {
@@ -183,21 +183,23 @@ class Simulation {
 }
 
 const defaultTemplates = [
-    {
-        "templateName":"Solar system",
-        "particleList":[
-            {"x":0,"y":0,"mass":1.989e+30,"size":20,"color":"#ffd500","vx":0,"vy":0,"id":"Sun","ax":0,"ay":0},
-            {"x":57.9,"y":0,"mass":3.285e+23,"size":5,"color":"#ababab","vx":0,"vy":47870,"id":"Mercury","ax":0,"ay":0},
-            {"x":108,"y":0,"mass":4.867e+24,"size":9,"color":"#ff4d00","vx":0,"vy":35020,"id":"Venus","ax":0,"ay":0},
-            {"x":149,"y":0,"mass":5.97219e+24,"size":15,"color":"#4287f5","vx":0,"vy":29780,"id":"Earth","ax":0,"ay":0},
-            {"x":149.3844,"y":0,"mass":7.34767309e+22,"size":5,"color":"#f6f1d5","vx":0,"vy":30802,"id":"Moon","ax":0,"ay":0},
-            {"x":228,"y":0,"mass":6.39e+23,"size":8,"color":"#c1440e","vx":0,"vy":24080,"id":"Mars","ax":0,"ay":0},
-            {"x":778,"y":0,"mass":1.89813e+27,"size":30,"color":"#e3dccb","vx":0,"vy":13060,"id":"Jupiter","ax":0,"ay":0},
-            {"x":1400,"y":0,"mass":5.683e+26,"size":25,"color":"#d8ca9d","vx":0,"vy":9680,"id":"Saturn","ax":0,"ay":0},
-            {"x":2900,"y":0,"mass":8.681e+25,"size":20,"color":"#d1e7e7","vx":0,"vy":6790,"id":"Uranus","ax":0,"ay":0},
-            {"x":4500,"y":0,"mass":1.024e+26,"size":20,"color":"#5b5ddf","vx":0,"vy":5450,"id":"Neptune","ax":0,"ay":0}
-        ]
-    }
+    // {
+    //     templateName: "Solar system",
+    //     particleList: [
+    //         {
+    //             x: 0,
+    //             y: 0,
+    //             mass: 1,
+    //             size: 10,
+    //             color: "#ffffff",
+    //             vx: 0,
+    //             vy: 0,
+    //             id: "the SUNNN",
+    //             ax: 0,
+    //             ay: 0,
+    //         }
+    //     ],
+    // },
 ];
 
 window.addEventListener('load', () => {
@@ -370,25 +372,15 @@ window.addEventListener('load', () => {
             );
             loadButton.addEventListener('click', () => {
                 template.particleList.forEach((preP) => {
-                    const distanceRatio = simulation.settings.dMulPx / (simulation.settings.dMulMilKm * 1e+9);
                     const prePcopy = {};
-                    let foundDup = false;
                     Object.entries(preP).forEach((pair) => {
                         prePcopy[pair[0]] = pair[1]
                     })
-                    do {
-                        foundDup = false;
-                        for (const p of simulation.particleList) {
-                            if (p.id === prePcopy.id) {
-                                prePcopy.id = `${prePcopy.id}#`;
-                                foundDup = true;
-                            }
+                    for (const p of simulation.particleList) {
+                        if (p.id === prePcopy.id) {
+                            prePcopy.id = `${prePcopy.id}#`;
                         }
-                    } while (foundDup)
-                    prePcopy.vx *= distanceRatio;
-                    prePcopy.vy *= distanceRatio;
-                    prePcopy.ax *= distanceRatio;
-                    prePcopy.ay *= distanceRatio;
+                    }
                     const P = new Particle(prePcopy);
                     createParticleDivChild(P);
                     simulation.particleList.push(P);
@@ -494,16 +486,11 @@ window.addEventListener('load', () => {
                         localStorage.setItem('templates', JSON.stringify([template]));
                     }
                     else {
-                        let foundDup = false;
-                        do {
-                            foundDup = false;
-                            for (const t of templates) {
-                                if (t.templateName === template.templateName) {
-                                    template.templateName = `${template.templateName}#`;
-                                    foundDup = true;
-                                }
+                        for (const t of templates) {
+                            if (t.templateName === template.templateName) {
+                                template.templateName = `${template.templateName}#`;
                             }
-                        } while (foundDup)
+                        }
                         templates.push(template);
                         localStorage.setItem('templates', JSON.stringify(templates));
                     }
@@ -543,17 +530,11 @@ window.addEventListener('load', () => {
                         }
     
                         else {
-                            let foundDup = false;
-                            // TODO: FIX DUP NAME PROB
-                            do {
-                                foundDup = false;
-                                for (const t of templates) {
-                                    if (t.templateName === template.templateName) {
-                                        template.templateName = `${template.templateName}#`;
-                                        foundDup = true;
-                                    }
+                            for (const t of templates) {
+                                if (t.templateName === template.templateName) {
+                                    template.templateName = `${template.templateName}#`;
                                 }
-                            } while (foundDup);
+                            }
                             templates.push(template);
                             localStorage.setItem('templates', JSON.stringify(templates));
                         }
@@ -697,17 +678,12 @@ window.addEventListener('load', () => {
             const vy = generateData.vy * distanceRatio;
 
             let id = generateData.id;
-            let foundDup = false;
 
-            do {
-                foundDup = false;
-                for (const p of simulation.particleList) {
-                    if (p.id === id) {
-                        id = `${id}#`;
-                        foundDup = true;
-                    }
+            for (const p of simulation.particleList) {
+                if (p.id === id) {
+                    id = `${id}#`;
                 }
-            } while (foundDup)
+            }
 
             const particle = new Particle(
                 {
@@ -795,8 +771,8 @@ window.addEventListener('load', () => {
 
     canvas.addEventListener('mousedown', (event) => {dragDown(event, false)});
     // Uses body instead up canvas to detect more
-    window.addEventListener('mousemove', (event) => {dragMove(event, false)});
-    window.addEventListener('mouseup', (event) => {dragUp(event, false)});
+    document.querySelector('body').addEventListener('mousemove', (event) => {dragMove(event, false)});
+    document.querySelector('body').addEventListener('mouseup', (event) => {dragUp(event, false)});
     
     canvas.addEventListener('touchstart', (event) => {dragDown(event, true)});
     document.querySelector('body').addEventListener('touchmove', (event) => {dragMove(event, true)});
@@ -847,17 +823,12 @@ window.addEventListener('load', () => {
         const vx = generateData.vx * distanceRatio;
         const vy = generateData.vy * distanceRatio;
         let id = generateData.id;
-        let foundDup = false;
 
-        do {
-            foundDup = false;
-            for (const p of simulation.particleList) {
-                if (p.id === id) {
-                    id = `${id}#`;
-                    foundDup = true;
-                }
+        for (const p of simulation.particleList) {
+            if (p.id === id) {
+                id = `${id}#`;
             }
-        } while (foundDup)
+        }
 
         const particle = new Particle(
             {

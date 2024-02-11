@@ -108,26 +108,28 @@
                                 if (isTouchScreen)
                                     e.setAttribute('src', e.getAttribute('data-original-src'));
                             });
-                            innerparent.classList.add('pointer');
                         }
 
-                        if (e.hasAttribute('data-popup')) innerparent.addEventListener('click', (event) => {
-                            event.preventDefault();
-                            void Array.prototype.every.call(document.querySelector('.popups').children,
-                                popup => {
-                                    if (popup.hasAttribute('data-popup')) {
-                                        if (popup.getAttribute('data-popup') === e.getAttribute('data-popup')) {
-                                            menu.style.display = 'none';
-                                            popup.parentNode.style.display = 'block';
-                                            popup.style.display = 'block';
-                                            return false;
+                        if (e.hasAttribute('data-popup')) {
+                            innerparent.classList.add('pointer');
+                            innerparent.addEventListener('click', (event) => {
+                                event.preventDefault();
+                                void Array.prototype.every.call(document.querySelector('.popups').children,
+                                    popup => {
+                                        if (popup.hasAttribute('data-popup')) {
+                                            if (popup.getAttribute('data-popup') === e.getAttribute('data-popup')) {
+                                                menu.style.display = 'none';
+                                                popup.parentNode.style.display = 'block';
+                                                popup.style.display = 'block';
+                                                return false;
+                                            }
+                                            else return true;
                                         }
                                         else return true;
                                     }
-                                    else return true;
-                                }
-                            );
-                        });
+                                );
+                            });
+                        }
 
                         innerparent.appendChild(e)
                         parent.appendChild(innerparent);
@@ -149,7 +151,7 @@
                 <br/>
                 <div>Settings</div>
                 <hr></hr>
-                <div>Version 2.4 Beta</div>
+                <div>Version 2.4 Beta 1</div>
                 <hr></hr>
                 <table>
                     <tr>
