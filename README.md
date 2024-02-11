@@ -1,4 +1,4 @@
-# gravitysimulation V2.4BETA1TEST1
+# gravitysimulation V2.4BETA1TEST2
 https://sakamsantparsbees.github.io/gravitysimulation/
 
 <details>
@@ -59,5 +59,8 @@ https://sakamsantparsbees.github.io/gravitysimulation/
     V2.4BETA2TEST1
     - Added wheel zoom and pinch zoom
     - Particles vx vy ax ay property syncs with distance ratio
+
+    V2.4BETA2TEST2
+    - Replace favicon
   </p>
 </details>
