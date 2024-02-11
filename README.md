@@ -1,4 +1,4 @@
-# gravitysimulation V2.4BETA1
+# gravitysimulation V2.4BETA1TEST1
 https://sakamsantparsbees.github.io/gravitysimulation/
 
 <details>
@@ -37,7 +37,7 @@ https://sakamsantparsbees.github.io/gravitysimulation/
     - Fixed zero mass acceraltion bug
 
     V2.3:
-    - Reworked UI's system (Unable callout popup when hold touch on touch devices and more responsive)
+    - Fixed UI system (Unable callout popup when hold touch on touch devices and more responsive)
 
     V2.3.1:
     - Fixed untabbable bug on touch devices
@@ -55,5 +55,9 @@ https://sakamsantparsbees.github.io/gravitysimulation/
     - Removed hr between templates
     - Added solar system
     - Fixed gravitational attraction miscalculations
+
+    V2.4BETA2TEST1
+    - Added wheel zoom and pinch zoom
+    - Particles vx vy ax ay property syncs with distance ratio
   </p>
 </details>
