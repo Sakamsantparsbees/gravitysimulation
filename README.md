@@ -1,4 +1,4 @@
-# gravitysimulation V2.4BETA2TEST6
+# gravitysimulation V2.4BETA2TEST7
 https://sakamsantparsbees.github.io/gravitysimulation/
 
 <details>
@@ -75,5 +75,8 @@ https://sakamsantparsbees.github.io/gravitysimulation/
 
     V2.2BETA2TEST6
     - changed favicon png to ico (attemp to fix unshown icon on ipad google) (DB purpose)
+
+    V2.2BETA2TEST7
+    - Used realfavicongenerator website tool and icon package
   </p>
 </details>
