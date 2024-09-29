@@ -57,5 +57,7 @@ https://sakamsantparsbees.github.io/gravitysimulation/
     - Replaced the zoom function with a more appropriate calculation method.
     - Fixed null particle name not appearing in when exporting
     - Removed reset velocity
+    - Hide unimplemented features
+    - Added remove all particle button in particle list menu
   </p>
 </details>
