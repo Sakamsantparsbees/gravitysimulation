@@ -1,4 +1,4 @@
-# gravitysimulation V2.4
+# gravitysimulation V2.5
 https://sakamsantparsbees.github.io/gravitysimulation/
 
 <details>
@@ -52,5 +52,10 @@ https://sakamsantparsbees.github.io/gravitysimulation/
     - Fixed pause button shifted lower in webkit
     - Fixed on generate bug when zoomed
     - Fixed gravitational attraction miscalculated formula
+
+    V2.5
+    - Replaced the zoom function with a more appropriate calculation method.
+    - Fixed null particle name not appearing in when exporting
+    - Removed reset velocity
   </p>
 </details>
