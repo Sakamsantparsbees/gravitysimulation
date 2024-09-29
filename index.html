@@ -19,7 +19,7 @@
         <img data-popup="settings" data-original-src="svgs/settings.svg" alt="Settings"></img>
         <img data-popup="list" data-original-src="svgs/particles.svg" alt="Particle(s) List"></img>
         <img data-popup="insert" data-original-src="svgs/insert.svg" alt="Insert Particle(s)"></img>
-        <img data-popup="reset" data-original-src="svgs/reset.svg" alt="Reset Velocity"></img>
+        <!-- <img data-popup="reset" data-original-src="svgs/reset.svg" alt="Reset Velocity"></img> -->
         <img data-popup="play" data-original-src="svgs/play.svg" alt="Play/Start Simulation"></img>
         <img data-popup="pause" data-original-src="svgs/pause.svg" alt="Pause Simulation"></img>
         <img data-popup="end" data-original-src="svgs/end.svg" alt="End Simulation"></img>
@@ -155,7 +155,7 @@
                 <br/>
                 <div>Settings</div>
                 <hr></hr>
-                <div>Version 2.4</div>
+                <div>Version 2.5</div>
                 <hr></hr>
                 <table>
                     <tr>
@@ -186,8 +186,8 @@
                 <input type="checkbox" id="renderCeil"></input>
                 <label for="renderCeil">Use Math.ceil() when render</label>
                 <br/>
-                <input type="checkbox" id="colorParticleByAcceleration"></input>
-                <label for="colorParticleByAcceleration">Color particle by accerleration (not implemented)</label>
+                <!-- <input type="checkbox" id="colorParticleByAcceleration"></input>
+                <label for="colorParticleByAcceleration">Color particle by accerleration (not implemented)</label> -->
                 <br/>
                 <button id="applySettings">Apply</button>
         </div>
@@ -251,7 +251,7 @@
         </div>
         <div data-popup="list">
             <div class="popup-inner-wrapper">
-                <button class="go-back-button">Go back</button><button id="toTemplateButton">Templates</button>
+                <button class="go-back-button">Go back</button><button id="toTemplateButton">Templates</button><button id="removeAllParticles">Remove all Particles</button>
                 <br/><br/>
                 <span>Particle List</span>
                 <hr></hr>

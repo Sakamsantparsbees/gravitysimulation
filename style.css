@@ -197,6 +197,11 @@ div[data-popup="list"] .go-back-button {
     display: inline-block;
 }
 
+#removeAllParticles {
+    margin-left: 3px;
+    display: inline-block;
+}
+
 #defaultTemplateList button, #templateList button {
     margin-left: 3px;
     display: inline-block;

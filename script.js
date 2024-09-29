@@ -7,7 +7,7 @@ class Particle {
         this.color = (data.color ?? '#ffffff');
         this.vx = (data.vx ?? 0);
         this.vy = (data.vy ?? 0);
-        this.id = (data.id ?? null);
+        this.id = (data.id ?? "");
         this.ax = (data.ax ?? 0);
         this.ay = (data.ay ?? 0);
     }
@@ -102,7 +102,8 @@ class Simulation {
         ctx.clearRect(0, 0, width, height);
 
         for (const p of this.particleList) {
-            size = p.size * zoom;
+            // size = p.size * zoom;
+            size = p.size * 1;
             x = (p.x + xdrag) * zoom + width * 0.5 - size * 0.5;
             y = (p.y + ydrag) * zoom + height * 0.5 - size * 0.5;
 
@@ -164,12 +165,12 @@ class Simulation {
         }
     }
 
-    resetVelocity() {
-        for (let p of this.particleList) {
-            p.vx = 0;
-            p.vy = 0;
-        }
-    }
+    // resetVelocity() {
+    //     for (let p of this.particleList) {
+    //         p.vx = 0;
+    //         p.vy = 0;
+    //     }
+    // }
 
     pause() {
         if (this.simulationRunning) {
@@ -220,7 +221,7 @@ window.addEventListener('load', () => {
             ]
         }
     ];
-    const wheelIncrement = 2.5;
+    const wheelIncrement = 5;
     let pinchFactor = 0.01;
     window.pinchFactor = (n) => (pinchFactor = n);
     const particleListDiv = document.getElementById('particleList');
@@ -470,6 +471,12 @@ window.addEventListener('load', () => {
             popup_list.removeAttribute('style');
             popup_template.style.display = 'block';
         });
+
+        document.getElementById('removeAllParticles').addEventListener('click', () => {
+            [...document.getElementsByClassName('deleteButton')].forEach((e) => {
+                e.click()
+            })
+        })
     
         document.getElementById('templateGoBackButton').addEventListener('click', () => {
             popup_list.style.display = 'block';
@@ -639,6 +646,7 @@ window.addEventListener('load', () => {
                 .appendChild(document.createTextNode('Delete'))
                 .parentNode
             );
+            deleteButton.classList.add("deleteButton")
             const content = element.appendChild(document.createElement("table"));
             const attributes = [
                 'x', 'y', 'mass', 'size', 'color', 'vx', 'vy', 'ax', 'ay'
@@ -708,7 +716,7 @@ window.addEventListener('load', () => {
         const color = insertInputs.color.value ? insertInputs.color.value : insertInputs.color.placeholder;
         const vx = isNaN(parseFloat(insertInputs.xvelocity.value)) ? parseFloat(insertInputs.xvelocity.placeholder) : parseFloat(insertInputs.xvelocity.value);
         const vy = isNaN(parseFloat(insertInputs.yvelocity.value)) ? parseFloat(insertInputs.yvelocity.placeholder) : parseFloat(insertInputs.yvelocity.value);
-        const id = insertInputs.idName.value ? insertInputs.idName.value : null;
+        const id = insertInputs.idName.value ? insertInputs.idName.value : "";
         const x = isNaN(parseFloat(insertInputs.x.value)) ? parseFloat(insertInputs.x.placeholder) : parseFloat(insertInputs.x.value);
         const y = isNaN(parseFloat(insertInputs.y.value)) ? parseFloat(insertInputs.y.placeholder) : parseFloat(insertInputs.y.value);
         return {
@@ -825,7 +833,7 @@ window.addEventListener('load', () => {
                     const ratio = (lastDistance/distance)
                     simulation.settings.zoom =
                     (ratio > 1)
-                        ? simulation.settings.zoom * (1 - (ratio * pinchFactor))
+                        ? simulation.settings.zoom / (1 + (ratio * pinchFactor))
                         : simulation.settings.zoom * (1 + (ratio * pinchFactor));
                     zoomInput.value = (Math.round(simulation.settings.zoom*1e+4) * 1e-2).toString();
                     lastDistance = distance;
@@ -875,13 +883,17 @@ window.addEventListener('load', () => {
         if (menuButtons.drag.getAttribute('data-checked') === 'true') {
             const y = event.deltaY;
             if (y < 0) {
-                zoomInput.value = (parseFloat(zoomInput.value) + wheelIncrement).toString();
-                simulation.settings.zoom += wheelIncrement * 0.01;
+                // simulation.settings.zoom += wheelIncrement * 0.01;
+                simulation.settings.zoom *= 1 + (wheelIncrement * 0.01)
+                // zoomInput.value = (parseFloat(zoomInput.value) + wheelIncrement).toString();
+                zoomInput.value = (parseFloat(simulation.settings.zoom * 100)).toString();
                 simulation.renderStep();
             }
             else {
-                zoomInput.value = (parseFloat(zoomInput.value) - wheelIncrement).toString();
-                simulation.settings.zoom -= wheelIncrement * 0.01;
+                // simulation.settings.zoom -= wheelIncrement * 0.01;
+                simulation.settings.zoom /=  1 + (wheelIncrement * 0.01)
+                // zoomInput.value = (parseFloat(zoomInput.value) - wheelIncrement).toString();
+                zoomInput.value = (parseFloat(simulation.settings.zoom * 100)).toString();
                 simulation.renderStep();
             }
         }
@@ -978,10 +990,10 @@ window.addEventListener('load', () => {
         }
     });
 
-    menuButtons['reset'].parentNode.addEventListener('click', (event) => {
-        event.preventDefault();
-        simulation.resetVelocity();
-    });
+    // menuButtons['reset'].parentNode.addEventListener('click', (event) => {
+    //     event.preventDefault();
+    //     simulation.resetVelocity();
+    // });
 
     menuButtons['play'].parentNode.addEventListener('click', (event) => {
         event.preventDefault();
