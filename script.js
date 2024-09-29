@@ -222,7 +222,7 @@ window.addEventListener('load', () => {
         }
     ];
     const wheelIncrement = 5;
-    let pinchFactor = 0.01;
+    let pinchFactor = 0.02;
     window.pinchFactor = (n) => (pinchFactor = n);
     const particleListDiv = document.getElementById('particleList');
     const applySettingsButton = document.getElementById('applySettings');
