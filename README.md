@@ -1,4 +1,4 @@
-# gravitysimulation V2.5
+# gravitysimulation V2.6
 https://sakamsantparsbees.github.io/gravitysimulation/
 
 <details>
@@ -57,7 +57,8 @@ https://sakamsantparsbees.github.io/gravitysimulation/
     - Replaced the zoom function with a more appropriate calculation method.
     - Fixed null particle name not appearing in when exporting
     - Removed reset velocity
-    - Hide unimplemented features
-    - Added remove all particle button in particle list menu
+
+    V2.6
+    - added user-scalable=no in viewport meta tag
   </p>
 </details>
