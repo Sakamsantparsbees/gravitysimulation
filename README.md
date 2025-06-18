@@ -2,7 +2,6 @@
 https://sakamsantparsbees.github.io/gravitysimulation/
 
 Copyright Sakamsantparsbees 2025. All rights reserved.
-This project is not licensed for modification, or distribution.
 
 <details>
   <summary>Changelog</summary>
