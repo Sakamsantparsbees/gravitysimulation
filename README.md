@@ -1,7 +1,7 @@
 # gravitysimulation V2.6
 https://yogurtramune.github.io/gravitysimulation/
 
-Copyright Sakamsantparsbees 2025. All rights reserved.
+Copyright YogurtRamune 2025. All rights reserved.
 
 <details>
   <summary>Changelog</summary>
@@ -64,4 +64,5 @@ Copyright Sakamsantparsbees 2025. All rights reserved.
     - added user-scalable=no in viewport meta tag
   </p>
 </details>
+
 
